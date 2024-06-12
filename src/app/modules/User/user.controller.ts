@@ -1,28 +1,18 @@
+import httpStatus from "http-status";
+import sendResponse from "../../utils/sendResponse";
 import { userService } from "./user.service";
-import { Request, Response } from 'express';
+import catchAsync from "../../utils/catchAsync";
 
+const userSignUp = catchAsync(async (req, res) => {
+  const user = await userService.createUser(req.body);
 
-const signUp = async (req: Request, res: Response) => {
-    try {
-      const user = await userService.createUser(req.body);
-      res.status(201).json({
-        success: true,
-        statusCode: 201,
-        message: 'User registered successfully',
-        data: {
-          ...user.toObject(),
-          password: req.body?.password 
-        }
-      });
-    } catch (error:any) {
-      res.status(500).json({
-        success: false,
-        statusCode: 500,
-        message: error.message,
-      });
-    }
-};
-  
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'User registered successfully',
+    data: user
+  });
+});
 export const userController = {
-    signUp
+    userSignUp
 }

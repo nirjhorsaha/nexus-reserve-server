@@ -44,14 +44,21 @@ userSchema.pre<IUser>('save', async function (next) {
     user.password,
     Number(config.bcrypt_salt_round),
   );
-
   next();
 });
 
 // Middleware for post-saving actions
-userSchema.post<IUser>('save', function (doc, next) {
-  doc.password = ''; // Clear password after saving
-  next();
+// userSchema.post<IUser>('save', function (doc, next) {
+//   doc.password = ' '; // Clear password after saving
+//   next();
+// });
+
+// Transform the output to remove the password field
+userSchema.set('toJSON', {
+  transform: (doc, ret) => {
+    delete ret.password;
+    return ret;
+  },
 });
 
 export const User = model<IUser>('User', userSchema);
