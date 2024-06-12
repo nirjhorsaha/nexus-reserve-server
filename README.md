@@ -21,10 +21,10 @@ Welcome to `Nexus Reserve`, the premier Co-Working Room Reservation Platform des
 
 ## Technology Stack
 
-- **Backend**: Node.js and Express.js for building a robust server-side application.
-- **Database**: MongoDB with Mongoose for efficient data storage and retrieval.
-- **Authentication**: JSON Web Tokens (JWT) for secure user authentication and authorization.
-- **TypeScript**: Enhancing codebase maintainability and scalability with statically typed JavaScript.
+- **Backend**: `Node.js` and `Express.js` for building a robust server-side application.
+- **Database**: MongoDB with `Mongoose` for efficient data storage and retrieval.
+- **Authentication**: `JSON Web Tokens (JWT)` for secure user authentication and authorization.
+- **TypeScript**: Enhancing codebase maintainability and scalability with statically typed `JavaScript`.
 
 
 ## Installation
