@@ -63,7 +63,7 @@ npm run start:dev
 
 ## Key Features
 
-- **User and Admin Management**: Secure user authentication with JWT tokens. Admins can create, update, and delete rooms and slots.
+- **User and Admin Management**: Secure user authentication with **JWT** tokens. Admins can create, update, and delete rooms and slots.
 
 - **Room and Slot Management**: Create, update, and soft-delete meeting rooms. Define time slots per room.
 
@@ -78,7 +78,7 @@ npm run start:dev
 Contributions are welcome.! If you'd like to contribute to this project, please follow these steps:
 
 - Fork the repository.
-- Create your feature branch: git checkout -b feature-name.
-- Commit your changes: git commit -am 'Add some feature'.
-- Push to the branch: git push origin feature-name.
+- Create your feature branch: `git checkout -b feature-name`.
+- Commit your changes: `git commit -m 'Add some feature'`.
+- Push to the branch: `git push origin feature-name`.
 - Submit a pull request.
