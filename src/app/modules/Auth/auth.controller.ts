@@ -16,7 +16,7 @@ const userlogin = catchAsync(async (req: Request, res: Response) => {
   if (!user) {
     sendResponse(res, {
       success: false,
-      statusCode: 401,
+      statusCode: httpStatus.UNAUTHORIZED,
       message: 'Invalid email or password',
       data: null,
     });
