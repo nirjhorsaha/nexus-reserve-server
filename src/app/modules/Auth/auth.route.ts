@@ -8,6 +8,13 @@ import { authController } from './auth.controller';
 const router = express.Router();
 
 router.post(
+  '/signup',
+  validateRequest(UserValidation.createUserValidationSchema),
+  userController.userSignUp,
+);
+
+
+router.post(
   '/login',
   validateRequest(AuthValidation.loginValidationSchema),
   authController.userlogin,
