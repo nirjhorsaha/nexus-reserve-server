@@ -1,10 +1,10 @@
 import httpStatus from 'http-status';
 import sendResponse from '../../utils/sendResponse';
-import { userService } from './user.service';
+import { UserService } from './user.service';
 import catchAsync from '../../utils/catchAsync';
 
 const userSignUp = catchAsync(async (req, res) => {
-  const user = await userService.createUser(req.body);
+  const user = await UserService.createUser(req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

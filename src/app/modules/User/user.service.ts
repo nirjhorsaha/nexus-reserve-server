@@ -7,6 +7,6 @@ const createUser = async (userData: Partial<IUser>) => {
   return user;
 };
 
-export const userService = {
+export const UserService = {
   createUser,
 };
