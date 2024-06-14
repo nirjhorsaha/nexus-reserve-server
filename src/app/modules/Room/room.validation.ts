@@ -3,7 +3,7 @@ import { z } from 'zod';
 const createRoomValidationSchema = z.object({
   body: z.object({
     name: z.string().min(1, 'Name is required'),
-    roomNo: z.string().min(1, 'Room number is required'),
+    roomNo: z.number().min(1, 'Room number is required'),
     floorNo: z
       .number()
       .int()
