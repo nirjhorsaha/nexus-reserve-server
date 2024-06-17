@@ -2,6 +2,7 @@ import { RoomService } from './room.service';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
+import { RoomsRoutes } from './room.route';
 
 const createRoom = catchAsync(async (req, res) => {
   const { name, roomNo, floorNo, capacity, pricePerSlot, amenities } = req.body;
@@ -79,8 +80,31 @@ const getAllRoom = catchAsync(async (req, res) => {
   });
 });
 
+const updatedRoom = catchAsync(async (req, res) => {
+  const roomId = req.params.id;
+  const updatedRoomData = req.body;
+
+  const updatedRoom = await RoomService.updateRoom(roomId, updatedRoomData);
+
+  if (!updatedRoom) {
+    return sendResponse(res, {
+      success: false,
+      statusCode: httpStatus.NOT_FOUND,
+      message: 'Room not found.!',
+      data: null,
+    });
+  }
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Room updated successfully',
+    data: updatedRoom,
+  });
+})
+
 export const RoomController = {
   createRoom,
   getSingleRoom,
   getAllRoom,
+  updatedRoom,
 };
