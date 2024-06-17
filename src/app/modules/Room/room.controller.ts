@@ -38,26 +38,26 @@ const createRoom = catchAsync(async (req, res) => {
   });
 });
 
-// const getSingleRoom = catchAsync(async (req, res) => {
-//   const roomId = req.params.id;
-//   const room = await RoomService.getRoomById(roomId);
+const getSingleRoom = catchAsync(async (req, res) => {
+  const roomId = req.params.id;
+  const room = await RoomService.getRoomById(roomId);
 
-//   if (!room) {
-//     return sendResponse(res, {
-//       success: false,
-//       statusCode: httpStatus.NOT_FOUND,
-//       message: 'Room not found',
-//       data: null,
-//     });
-//   }
+  if (!room) {
+    return sendResponse(res, {
+      success: false,
+      statusCode: httpStatus.NOT_FOUND,
+      message: 'Room not found',
+      data: null,
+    });
+  }
 
-//   sendResponse(res, {
-//     success: true,
-//     statusCode: httpStatus.OK,
-//     message: 'Room retrieved successfully',
-//     data: room,
-//   });
-// });
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Room retrieved successfully',
+    data: room,
+  });
+});
 
 const getAllRoom = catchAsync(async (req, res) => {
   const rooms = await RoomService.getAllRooms();

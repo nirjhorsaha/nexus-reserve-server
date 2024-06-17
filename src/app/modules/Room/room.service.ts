@@ -16,10 +16,10 @@ const createRoom = async (data: IRoom): Promise<IRoom> => {
     return newRoom;
   };
   
-  // const getRoomById = async (id: string): Promise<IRoom | null> => {
-  //   // return await Room.findById(id).select('-__v');
-  //   return await Room.findById(id);
-  // };
+  const getRoomById = async (id: string): Promise<IRoom | null> => {
+    // return await Room.findById(id).select('-__v');
+    return await Room.findById(id);
+  };
   
   const getAllRooms = async () => {
     // return await Room.find({ isDeleted: false });
