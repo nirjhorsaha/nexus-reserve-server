@@ -7,17 +7,22 @@ import httpStatus from 'http-status';
 const authenticateUser = (req: Request, res: Response, next: NextFunction) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');
 
+  // checking if the token is missing
   if (!token) {
     return sendResponse(res, {
-        success: false,
-        statusCode: httpStatus.UNAUTHORIZED,
-        message: 'Authorization token missing',
-        data: null,
-      });
+      success: false,
+      statusCode: httpStatus.UNAUTHORIZED,
+      message: 'Authorization token missing',
+      data: null,
+    });
   }
 
   try {
-    const decoded = jwt.verify(token, config.jwt_access_secret as string) as JwtPayload;
+    // checking if the given token is valid
+    const decoded = jwt.verify(
+      token,
+      config.jwt_access_secret as string,
+    ) as JwtPayload;
 
     // Attach user id and role to request object
     (req as any).userId = decoded.sub;
