@@ -13,7 +13,6 @@ const authenticateUser = (req: Request, res: Response, next: NextFunction) => {
       success: false,
       statusCode: httpStatus.UNAUTHORIZED,
       message: 'Authorization token missing',
-      data: null,
     });
   }
 
@@ -29,20 +28,20 @@ const authenticateUser = (req: Request, res: Response, next: NextFunction) => {
     (req as any).userRole = decoded.role;
     next();
   } catch (error) {
-    res.status(403).json({
-      success: false,
-      statusCode: 403,
-      message: 'Invalid token',
-    });
+     sendResponse(res, {
+       success: false,
+       statusCode: httpStatus.FORBIDDEN,
+       message: 'Invalid token',
+     });
   }
 };
 
 const authorizeAdmin = (req: Request, res: Response, next: NextFunction) => {
   if ((req as any).userRole !== 'admin') {
-    return res.status(403).json({
+    sendResponse(res, {
       success: false,
-      statusCode: 403,
-      message: 'Access denied. Admins only.',
+      statusCode: httpStatus.UNAUTHORIZED,
+      message: 'You have no access to this route',
     });
   }
   next();
