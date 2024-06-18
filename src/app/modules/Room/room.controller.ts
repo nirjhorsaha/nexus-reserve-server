@@ -16,8 +16,7 @@ const createRoom = catchAsync(async (req, res) => {
     return sendResponse(res, {
       success: false,
       statusCode: httpStatus.BAD_REQUEST,
-      message: `Invalid roomNo. For floorNo ${floorNo}, roomNo should be between ${roomNoStart} and ${roomNoEnd}.`,
-      data: null,
+      message: `Invalid room no.!! For floor no: ${floorNo}, room no should be between ${roomNoStart} and ${roomNoEnd}.`,
     });
   }
 
@@ -47,8 +46,7 @@ const getSingleRoom = catchAsync(async (req, res) => {
     return sendResponse(res, {
       success: false,
       statusCode: httpStatus.NOT_FOUND,
-      message: 'Room not found',
-      data: null,
+      message: 'No Data Found',
     });
   }
 
@@ -68,7 +66,6 @@ const getAllRoom = catchAsync(async (req, res) => {
        statusCode: httpStatus.NOT_FOUND,
        success: false,
        message: 'No Data Found',
-       data: [],
      });
   }
   
@@ -91,7 +88,6 @@ const updatedRoom = catchAsync(async (req, res) => {
       success: false,
       statusCode: httpStatus.NOT_FOUND,
       message: 'Room not found.!',
-      data: null,
     });
   }
   sendResponse(res, {
@@ -102,9 +98,32 @@ const updatedRoom = catchAsync(async (req, res) => {
   });
 })
 
+
+const deleteRoom = catchAsync(async (req, res) => { 
+  const roomId = req.params.id;
+
+  const deletedRoom = await RoomService.deleteRoom(roomId);
+  
+  if (!deleteRoom) {
+    return sendResponse(res, {
+      success: false,
+      statusCode: httpStatus.NOT_FOUND,
+      message: 'Room not found'
+    })
+  }
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Room deleted successfully',
+    data: deletedRoom
+  });
+})
+
+
 export const RoomController = {
   createRoom,
   getSingleRoom,
   getAllRoom,
   updatedRoom,
+  deleteRoom
 };
