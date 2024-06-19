@@ -47,6 +47,7 @@ const getSingleRoom = catchAsync(async (req, res) => {
       success: false,
       statusCode: httpStatus.NOT_FOUND,
       message: 'No Data Found',
+      data: []
     });
   }
 
@@ -66,6 +67,7 @@ const getAllRoom = catchAsync(async (req, res) => {
        statusCode: httpStatus.NOT_FOUND,
        success: false,
        message: 'No Data Found',
+       data: []
      });
   }
   

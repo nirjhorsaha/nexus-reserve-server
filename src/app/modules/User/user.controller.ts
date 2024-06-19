@@ -2,7 +2,6 @@ import httpStatus from 'http-status';
 import sendResponse from '../../utils/sendResponse';
 import { UserService } from './user.service';
 import catchAsync from '../../utils/catchAsync';
-import { Request, Response } from 'express';
 
 const userSignUp = catchAsync(async (req, res) => {
   const user = await UserService.createUser(req.body);
@@ -12,7 +11,7 @@ const userSignUp = catchAsync(async (req, res) => {
     success: true,
     message: 'User registered successfully',
     data: user,
-  });
+  }); 
 });
 
 const getAllUsers = catchAsync(async (req, res) => {
@@ -23,7 +22,7 @@ const getAllUsers = catchAsync(async (req, res) => {
       statusCode: httpStatus.NOT_FOUND,
       success: false,
       message: 'No Data Found',
-      data: null,
+      data: [],
     });
   } else {
     sendResponse(res, {
