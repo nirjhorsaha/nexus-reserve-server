@@ -31,20 +31,22 @@ const authenticateUser = (req: Request, res: Response, next: NextFunction) => {
      sendResponse(res, {
        success: false,
        statusCode: httpStatus.FORBIDDEN,
-       message: 'Invalid token',
+       message: 'Invalid token!',
      });
   }
 };
 
 const authorizeAdmin = (req: Request, res: Response, next: NextFunction) => {
-  if ((req as any).userRole !== 'admin') {
-    sendResponse(res, {
+  if ((req as any)?.userRole !== 'admin') {
+    return sendResponse(res, {
       success: false,
       statusCode: httpStatus.UNAUTHORIZED,
       message: 'You have no access to this route',
     });
+  } else {
+    next();
   }
-  next();
 };
+
 
 export { authenticateUser, authorizeAdmin };

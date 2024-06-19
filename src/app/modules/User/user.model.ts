@@ -32,7 +32,7 @@ const userSchema = new Schema<IUser>(
       default: 'user',
     },
   },
-  { timestamps: true },
+  // { timestamps: true },
 );
 
 // Middleware for pre-saving actions
