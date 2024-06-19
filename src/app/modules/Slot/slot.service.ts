@@ -4,12 +4,7 @@ import { Slot } from './slot.model';
 import { Room } from '../Room/room.model';
 import { ISlot } from './slot.interface';
 
-const createSlots = async ({
-  room,
-  date,
-  startTime,
-  endTime,
-}: ISlot) => {
+const createSlots = async ({ room, date, startTime, endTime }: ISlot) => {
   // Check if the room exists
   const roomExists = await Room.findById(room);
   if (!roomExists) {
