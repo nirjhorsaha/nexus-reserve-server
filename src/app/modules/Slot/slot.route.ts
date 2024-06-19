@@ -1,14 +1,17 @@
 import express from 'express';
 import validateRequest from '../../middlewares/validateRequest';
-import { userController } from '../User/user.controller';
-import { UserValidation } from '../User/user.validation';
+import { SlotController } from './slot.controller';
+import { authenticateUser, authorizeAdmin } from '../../middlewares/auth';
+import { SlotValidation } from './slot.validation';
 
 const router = express.Router();
 
-// router.post(
-//   '/signup',
-//   validateRequest(UserValidation.createUserValidationSchema),
-//   userController.userSignUp,
-// );
+router.post(
+  '/',
+  authenticateUser,
+  authorizeAdmin,
+  validateRequest(SlotValidation.createSlotValidationSchema),
+  SlotController.createSlot,
+);
 
 export const SlotRoutes = router;
