@@ -5,7 +5,7 @@ import { IBooking } from './booking.interface';
 import { User } from '../User/user.model';
 import { Slot } from '../Slot/slot.model';
 import { Booking } from './booking.model';
-import mongoose, { Types } from 'mongoose';
+import mongoose from 'mongoose';
 
 const createBooking = async (bookingData: IBooking) => {
   const { date, slots, room: roomId, user: userId } = bookingData;
@@ -90,15 +90,31 @@ const getAllBookings = async () => {
   return getAllBookings;
 };
 
-const getUserBookings = async (userId: string) => {
-  const getUserBookings = await Booking.find({
-    user: new Types.ObjectId(userId),
-  })
-    .populate('room')
-    .populate('slot')
-    .populate('user');
-  return getUserBookings;
-};
+// const getUserBookings = async (userId: string) => {
+//   const getUserBookings = await Booking.find({
+//     user: new Types.ObjectId(userId),
+//   })
+//     .populate('room')
+//     .populate('slot')
+//     .populate('user');
+//   return getUserBookings;
+// };
+
+const getUserBookings = async (email: string) => {
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new Error(`User with email ${email} not found`);
+  }
+
+  // Find bookings where user ID matches
+  const bookings = await Booking.find({ user: user._id })
+    .populate('room') 
+    .populate('slots') 
+    .populate('user'); 
+  return bookings;
+}
+
 
 const updateBooking = async (id: string, updatedData: IBooking) => {
   const updateBooking = await Booking.findByIdAndUpdate(id, updatedData, {

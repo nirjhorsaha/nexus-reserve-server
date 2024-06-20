@@ -20,4 +20,5 @@ router.get(
   BookingController.getAllBookings,
 );
 
+
 export const BookingRoutes = router;
