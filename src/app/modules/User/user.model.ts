@@ -33,6 +33,9 @@ const userSchema = new Schema<IUser>(
       default: 'user',
     },
   },
+  {
+    versionKey: false,
+  },
   // { timestamps: true },
 );
 
