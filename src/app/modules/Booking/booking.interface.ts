@@ -4,6 +4,8 @@ export interface IBooking {
   room: Types.ObjectId;
   slots: Types.ObjectId[];
   user: Types.ObjectId;
-  totalAmount: number;
+  date: string;
+  totalAmount?: number;
   isConfirmed?: 'confirmed' | 'unconfirmed' | 'canceled';
+  isDeleted?: boolean;
 }
