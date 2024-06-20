@@ -6,7 +6,9 @@ import httpStatus from 'http-status';
 
 const createSlot = catchAsync(async (req: Request, res: Response) => {
   const slotData = req.body;
+
   const savedSlots = await SlotService.createSlots(slotData);
+  
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -15,6 +17,23 @@ const createSlot = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getAvailableSlots = catchAsync(async (req, res) => {
+  const { date, roomId } = req.query;
+
+  const availableSlots = await SlotService.getAvailableSlots(
+    date as string,
+    roomId as string,
+  );
+
+  return sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Available slots retrieved successfully',
+    data: availableSlots,
+  });
+});
+
 export const SlotController = {
   createSlot,
+  getAvailableSlots,
 };
