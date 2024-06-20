@@ -24,6 +24,14 @@ const getAvailableSlots = catchAsync(async (req, res) => {
     date as string,
     roomId as string,
   );
+  if (availableSlots.length === 0) {
+    return sendResponse(res, {
+      success: false,
+      statusCode: httpStatus.NOT_FOUND,
+      message: 'No Data Found',
+      data: [],
+    });
+  }
 
   return sendResponse(res, {
     success: true,
