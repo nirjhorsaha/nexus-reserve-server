@@ -126,7 +126,14 @@ const updateBooking = async (
   return updateBooking;
 };
 
-
+const deleteBooking = async (id: Types.ObjectId) => {
+  const deleteBooking = await Booking.findByIdAndUpdate(
+    id,
+    { isDeleted: true },
+    { new: true },
+  );
+  return deleteBooking;
+};
 
 export const BookingService = {
   createBooking,
