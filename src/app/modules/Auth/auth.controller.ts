@@ -8,7 +8,6 @@ import generateToken from '../../utils/jwt';
 const userlogin = catchAsync(async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
-  // Validate user credentials
   const user = await authService.loginUser(email, password);
 
   if (!user) {
@@ -16,9 +15,7 @@ const userlogin = catchAsync(async (req: Request, res: Response) => {
       success: false,
       statusCode: httpStatus.UNAUTHORIZED,
       message: 'Invalid email or password',
-      data: null,
     });
-    return;
   }
 
   // Generate JWT token
