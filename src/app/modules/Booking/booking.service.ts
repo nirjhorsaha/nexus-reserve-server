@@ -109,6 +109,23 @@ const getUserBookings = async (email: string) => {
   return bookings;
 };
 
+const updateBooking = async (
+  bookingId: Types.ObjectId,
+  updatedData: Partial<IBooking>,
+) => {
+  const updateBooking = await Booking.findByIdAndUpdate(
+    bookingId,
+    updatedData,
+    {
+      new: true,
+    },
+  )
+    .populate('room')
+    .populate('slots')
+    .populate('user');
+  return updateBooking;
+};
+
 
 
 export const BookingService = {
