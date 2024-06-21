@@ -10,21 +10,17 @@ const createBookingValidationSchema = z.object({
       .refine((id) => objectIdRegex.test(id), { message: 'Invalid Room ID' }),
     slots: z
       .array(
-        z
-          .string()
-          .refine((id) => objectIdRegex.test(id), {
-            message: 'Invalid Slot ID',
-          }),
+        z.string().refine((id) => objectIdRegex.test(id), {
+          message: 'Invalid Slot ID',
+        }),
       )
       .nonempty({ message: 'At least one slot must be provided' }),
     user: z
       .string()
       .refine((id) => objectIdRegex.test(id), { message: 'Invalid User ID' }),
-    date: z
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/, {
-        message: 'Date must be in YYYY-MM-DD format',
-      }),
+    date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
+      message: 'Date must be in YYYY-MM-DD format',
+    }),
     // totalAmount: z
     //   .number()
     //   .min(0, { message: 'Total amount must be a positive number' }),
@@ -71,5 +67,5 @@ const bookingIdValidationSchema = z.object({
 export const BookingValidation = {
   createBookingValidationSchema,
   updateBookingValidationSchema,
-  bookingIdValidationSchema
+  bookingIdValidationSchema,
 };

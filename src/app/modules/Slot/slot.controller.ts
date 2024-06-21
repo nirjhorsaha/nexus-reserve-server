@@ -8,7 +8,7 @@ const createSlot = catchAsync(async (req: Request, res: Response) => {
   const slotData = req.body;
 
   const savedSlots = await SlotService.createSlots(slotData);
-  
+
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,

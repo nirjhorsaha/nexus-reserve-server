@@ -7,11 +7,13 @@ const bookingSchema = new Schema<IBooking>(
       type: String,
       required: true,
     },
-    slots: [{
-      type: Schema.Types.ObjectId,
-      ref: 'Slot',
-      required: true,
-    }],
+    slots: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Slot',
+        required: true,
+      },
+    ],
     room: {
       type: Schema.Types.ObjectId,
       ref: 'Room',

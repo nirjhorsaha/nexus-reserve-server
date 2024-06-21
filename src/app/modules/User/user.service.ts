@@ -12,7 +12,6 @@ const getAllUsers = async () => {
   return result;
 };
 
-
 export const UserService = {
   createUser,
   getAllUsers,

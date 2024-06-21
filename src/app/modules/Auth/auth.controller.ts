@@ -21,7 +21,7 @@ const userlogin = catchAsync(async (req: Request, res: Response) => {
     return;
   }
 
-// Generate JWT token
+  // Generate JWT token
   const token = generateToken(user?.email, user?.role);
 
   // Return success response with token and user data

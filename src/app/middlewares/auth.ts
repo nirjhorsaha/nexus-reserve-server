@@ -29,11 +29,11 @@ const authenticateUser = (req: Request, res: Response, next: NextFunction) => {
     (req as any).userRole = decoded.role;
     next();
   } catch (error) {
-     sendResponse(res, {
-       success: false,
-       statusCode: httpStatus.FORBIDDEN,
-       message: 'Invalid token!',
-     });
+    sendResponse(res, {
+      success: false,
+      statusCode: httpStatus.FORBIDDEN,
+      message: 'Invalid token!',
+    });
   }
 };
 
@@ -48,6 +48,5 @@ const authorizeAdmin = (req: Request, res: Response, next: NextFunction) => {
     next();
   }
 };
-
 
 export { authenticateUser, authorizeAdmin };

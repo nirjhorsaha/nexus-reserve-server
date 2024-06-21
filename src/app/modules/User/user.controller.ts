@@ -11,7 +11,7 @@ const userSignUp = catchAsync(async (req, res) => {
     success: true,
     message: 'User registered successfully',
     data: user,
-  }); 
+  });
 });
 
 const getAllUsers = catchAsync(async (req, res) => {
