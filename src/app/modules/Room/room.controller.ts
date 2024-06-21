@@ -2,6 +2,7 @@ import { RoomService } from './room.service';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
+import { Types } from 'mongoose';
 
 const createRoom = catchAsync(async (req, res) => {
   const { name, roomNo, floorNo, capacity, pricePerSlot, amenities } = req.body;
@@ -79,7 +80,7 @@ const getAllRoom = catchAsync(async (req, res) => {
 });
 
 const updatedRoom = catchAsync(async (req, res) => {
-  const roomId = req.params.id;
+  const roomId = new Types.ObjectId(req.params.id);
   const updatedRoomData = req.body;
 
   const updatedRoom = await RoomService.updateRoom(roomId, updatedRoomData);
@@ -108,7 +109,7 @@ const deleteRoom = catchAsync(async (req, res) => {
     return sendResponse(res, {
       success: false,
       statusCode: httpStatus.NOT_FOUND,
-      message: 'Room not found',
+      message: 'Failed to delete room',
     });
   }
   sendResponse(res, {

@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { IRoom } from './room.interface';
 import { Room } from './room.model';
 
@@ -26,7 +27,7 @@ const getAllRooms = async () => {
 };
 
 const updateRoom = async (
-  id: string,
+  id: Types.ObjectId,
   data: Partial<IRoom>,
 ): Promise<IRoom | null> => {
   const updatedRoom = await Room.findByIdAndUpdate(id, data, { new: true });
