@@ -5,13 +5,15 @@ import { IBooking } from './booking.interface';
 import { User } from '../User/user.model';
 import { Slot } from '../Slot/slot.model';
 import { Booking } from './booking.model';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 
 const createBooking = async (bookingData: IBooking) => {
   const { date, slots, room: roomId, user: userId } = bookingData;
 
+  // start new session and transaction
   const session = await mongoose.startSession();
   session.startTransaction();
+
   try {
     const room = await Room.findById(roomId).session(session);
     if (!room) {
@@ -23,6 +25,7 @@ const createBooking = async (bookingData: IBooking) => {
       throw new AppError(httpStatus.NOT_FOUND, 'User not found');
     }
 
+    // find available slots
     const bookingSlots = await Slot.find({
       _id: { $in: slots },
       date: date,
@@ -33,8 +36,10 @@ const createBooking = async (bookingData: IBooking) => {
       throw new AppError(httpStatus.NOT_FOUND, 'Slots not found');
     }
 
+    // calculate total amount
     const totalAmount = bookingSlots.length * room.pricePerSlot;
 
+    // extract slot id and mark them as booked
     const slotId = bookingSlots.map((slot) => slot._id);
     await Slot.updateMany(
       { _id: { $in: slotId } },
@@ -54,7 +59,6 @@ const createBooking = async (bookingData: IBooking) => {
     await booking.save({ session });
 
     // await booking.populate('slots');
-
     // await booking.populate('room');
     // await booking.populate('user');
     await booking.populate([
@@ -74,7 +78,7 @@ const createBooking = async (bookingData: IBooking) => {
   }
 };
 
-const getBookings = async (id: string) => {
+const getBooking = async (id: Types.ObjectId) => {
   const getBookingsbyId = await Booking.findById(id)
     .populate('room')
     .populate('slots')
@@ -90,16 +94,6 @@ const getAllBookings = async () => {
   return getAllBookings;
 };
 
-// const getUserBookings = async (userId: string) => {
-//   const getUserBookings = await Booking.find({
-//     user: new Types.ObjectId(userId),
-//   })
-//     .populate('room')
-//     .populate('slot')
-//     .populate('user');
-//   return getUserBookings;
-// };
-
 const getUserBookings = async (email: string) => {
   const user = await User.findOne({ email });
 
@@ -109,28 +103,17 @@ const getUserBookings = async (email: string) => {
 
   // Find bookings where user ID matches
   const bookings = await Booking.find({ user: user._id })
-    .populate('room') 
-    .populate('slots') 
-    .populate('user'); 
+    .populate('room')
+    .populate('slots')
+    .populate('user');
   return bookings;
-}
-
-
-const updateBooking = async (id: string, updatedData: IBooking) => {
-  const updateBooking = await Booking.findByIdAndUpdate(id, updatedData, {
-    new: true,
-  });
-  return updateBooking;
 };
 
-const deleteBooking = async (id: string) => {
-  const deleteBooking = await Booking.findByIdAndDelete(id);
-  return deleteBooking;
-};
+
 
 export const BookingService = {
   createBooking,
-  getBookings,
+  getBooking,
   getAllBookings,
   getUserBookings,
   updateBooking,

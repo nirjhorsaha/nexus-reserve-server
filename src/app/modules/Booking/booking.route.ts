@@ -14,11 +14,31 @@ router.post(
 );
 
 router.get(
+  '/:id',
+  authenticateUser,
+  authorizeAdmin,
+  BookingController.getBooking,
+);
+
+router.get(
   '/',
   authenticateUser,
   authorizeAdmin,
   BookingController.getAllBookings,
 );
 
+router.put(
+  '/:id',
+  authenticateUser,
+  authorizeAdmin,
+  BookingController.updateBooking,
+);
+
+router.delete(
+  '/:id',
+  authenticateUser,
+  authorizeAdmin,
+  BookingController.deleteBooking,
+);
 
 export const BookingRoutes = router;

@@ -2,7 +2,8 @@ import httpStatus from 'http-status';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import { BookingService } from './booking.service';
-import jwt from 'jsonwebtoken'; 
+import jwt from 'jsonwebtoken';
+import { Types } from 'mongoose';
 
 const createBooking = catchAsync(async (req, res) => {
   const bookingData = req.body;
@@ -12,6 +13,27 @@ const createBooking = catchAsync(async (req, res) => {
     success: true,
     statusCode: httpStatus.OK,
     message: 'Booking created successfully',
+    data: booking,
+  });
+});
+
+const getBooking = catchAsync(async (req, res) => {
+  const bookingId = new Types.ObjectId(req.params.id);
+  const booking = await BookingService.getBooking(bookingId);
+
+  if (!booking) {
+    sendResponse(res, {
+      success: false,
+      statusCode: httpStatus.NOT_FOUND,
+      message: 'No Data Found',
+      data: [],
+    });
+  }
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Booking retrived successfully',
     data: booking,
   });
 });
@@ -49,17 +71,62 @@ const getUserBookings = catchAsync(async (req, res) => {
   };
   const userEmail = decodedToken.email;
 
-  const bookings = await BookingService.getUserBookings(userEmail);
+  const booking = await BookingService.getUserBookings(userEmail);
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: 'User bookinigs retrieved successfully',
-    data: bookings,
+    data: booking,
+  });
+});
+
+const updateBooking = catchAsync(async (req, res) => {
+  const bookingId = new Types.ObjectId(req.params.id);
+  const updatedData = req.body;
+
+  const booking = await BookingService.updateBooking(bookingId, updatedData);
+
+  if (!booking) {
+    sendResponse(res, {
+      success: false,
+      statusCode: httpStatus.NOT_FOUND,
+      message: 'Booking not found',
+    });
+  }
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Booking updated successfully',
+    data: booking,
+  });
+});
+
+const deleteBooking = catchAsync(async (req, res) => {
+  const bookingId = new Types.ObjectId(req.params.id);
+  const deletedData = await BookingService.deleteBooking(bookingId);
+
+  if (!deletedData) {
+    sendResponse(res, {
+      success: false,
+      statusCode: httpStatus.NOT_FOUND,
+      message: 'Failed to delete booking!',
+    });
+  }
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Booking deleted successfully',
+    data: deletedData,
   });
 });
 
 export const BookingController = {
   createBooking,
+  getBooking,
   getAllBookings,
   getUserBookings,
+  updateBooking,
+  deleteBooking,
 };
