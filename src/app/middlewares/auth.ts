@@ -5,6 +5,7 @@ import config from '../config';
 import sendResponse from '../utils/sendResponse';
 import httpStatus from 'http-status';
 
+// Middleware for authenticate users
 const authenticateUser = (req: Request, res: Response, next: NextFunction) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');
 
@@ -37,6 +38,7 @@ const authenticateUser = (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
+// Middleware for authorize admin users
 const authorizeAdmin = (req: Request, res: Response, next: NextFunction) => {
   if ((req as any)?.userRole !== 'admin') {
     return sendResponse(res, {
@@ -49,4 +51,11 @@ const authorizeAdmin = (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { authenticateUser, authorizeAdmin };
+// Function to verify jwt token
+const verifyToken = (token: string) => {
+  return jwt.verify(token, process.env.jwt_access_secret as string) as {
+    email: string;
+  };
+};
+
+export { authenticateUser, authorizeAdmin, verifyToken };
