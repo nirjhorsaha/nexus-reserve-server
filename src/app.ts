@@ -11,7 +11,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// application routes
+// Application routes
 app.use('/api', router);
 app.use(
   '/api/my-bookings',
@@ -19,14 +19,15 @@ app.use(
   BookingController.getUserBookings,
 );
 
-// root route
+// Root route
 app.get('/', (req: Request, res: Response) => {
   res.send('Welcome to our Co-Working Space Booking System!');
 });
 
+// Global error handling middlewares
 app.use(globalErrorHandler);
 
-//Not Found
+// Not Found Route
 app.use(notFound);
 
 export default app;
