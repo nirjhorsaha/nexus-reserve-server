@@ -31,6 +31,7 @@ router.put(
   '/:id',
   authenticateUser,
   authorizeAdmin,
+  validateRequest(BookingValidation.updateBookingValidationSchema),
   BookingController.updateBooking,
 );
 

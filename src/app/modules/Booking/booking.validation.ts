@@ -21,11 +21,12 @@ const createBookingValidationSchema = z.object({
     date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, {
       message: 'Date must be in YYYY-MM-DD format',
     }),
-    // totalAmount: z
-    //   .number()
-    //   .min(0, { message: 'Total amount must be a positive number' }),
-    // isConfirmed: z.enum(['confirmed', 'unconfirmed', 'canceled'])
-    // isDeleted: z.boolean().default(false),
+    totalAmount: z
+      .number()
+      .min(0, { message: 'Total amount must be a positive number' })
+      .optional(),
+    isConfirmed: z.enum(['confirmed', 'unconfirmed', 'canceled']).optional(),
+    isDeleted: z.boolean().optional(),
   }),
 });
 
@@ -56,7 +57,7 @@ const updateBookingValidationSchema = z.object({
     .number()
     .min(0, { message: 'Total amount must be a positive number' })
     .optional(),
-  isConfirmed: z.boolean().optional(),
+  isConfirmed: z.enum(['confirmed', 'unconfirmed', 'canceled']).optional(),
   isDeleted: z.boolean().optional(),
 });
 

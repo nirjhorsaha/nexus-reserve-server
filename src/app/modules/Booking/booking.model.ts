@@ -31,8 +31,13 @@ const bookingSchema = new Schema<IBooking>(
     isConfirmed: {
       type: String,
       enum: ['confirmed', 'unconfirmed', 'canceled'],
-      // default: false,
     },
+    // isConfirmed: {
+    //   type: String,
+    //   enum: {
+    //     values: ['confirmed', 'unconfirmed', 'canceled']
+    //   },
+    // },
     isDeleted: {
       type: Boolean,
       default: false,
