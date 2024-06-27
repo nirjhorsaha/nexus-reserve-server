@@ -4,43 +4,15 @@ import AppError from '../../errors/AppError';
 import { Slot } from './slot.model';
 import { Room } from '../Room/room.model';
 import { ISlot } from './slot.interface';
-import mongoose from 'mongoose';
+import { Types } from 'mongoose';
 
 const createSlots = async ({ room, date, startTime, endTime }: ISlot) => {
-  // Check if the room exists
-  const roomExists = await Room.findById(room);
-  if (!roomExists) {
+  const isRoomExists = await Room.findById(room);
+  if (!isRoomExists) {
     throw new AppError(httpStatus.NOT_FOUND, 'Room not found');
   }
 
-  // const existingSlots = await Slot.find({
-  //   room,
-  //   date,
-  //   $or: [
-  //     // New slot starts before existing slot and ends after existing slot starts
-  //     {
-  //       $and: [
-  //         { startTime: { $lte: startTime } },
-  //         { endTime: { $gt: startTime } },
-  //       ],
-  //     },
-  //     // New slot starts before existing slot ends and ends after existing slot ends
-  //     {
-  //       $and: [
-  //         { startTime: { $lt: endTime } },
-  //         { endTime: { $gte: endTime } }
-  //       ],
-  //     },
-  //     // New slot starts and ends within the duration of an existing slot
-  //     {
-  //       $and: [
-  //         { startTime: { $gte: startTime } },
-  //         { endTime: { $lte: endTime } },
-  //       ],
-  //     },
-  //   ],
-  // });
- // chech if slot is already exists for the given room and date
+  // chech if slot is already exists for the given room and date
   const existingSlots = await Slot.find({
     room,
     date,
@@ -53,7 +25,7 @@ const createSlots = async ({ room, date, startTime, endTime }: ISlot) => {
       },
     ],
   });
-  
+
   if (existingSlots.length > 0) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
@@ -96,30 +68,70 @@ const createSlots = async ({ room, date, startTime, endTime }: ISlot) => {
   return saveSlots;
 };
 
+// const getAvailableSlots = async (date?: string, roomId?: string) => {
+//   const query: any = { isBooked: false };
+
+//   if (roomId) {
+//     if (!Types.ObjectId.isValid(roomId)) {
+//       throw new Error('Invalid roomId');
+//     }
+
+//     const existingRoom = await Room.findById(roomId);
+//     if (!existingRoom || existingRoom.isDeleted) {
+//       throw new AppError(httpStatus.NOT_FOUND, 'Room not found or is deleted.!!');
+//     }
+
+//     query.room = roomId;
+
+//     if (date) {
+//       const checkRoomForSpecifiedDate = await Slot.findOne({
+//         room: roomId,
+//         date: date,
+//       });
+
+//       if (!checkRoomForSpecifiedDate) {
+//         throw new AppError(
+//           httpStatus.NOT_FOUND,
+//           'Room not found for the specified date',
+//         );
+//       }
+//       query.date = date;
+//     }
+//   }
+
+//   // If no date or roomId provided, return all slots that are not booked
+//   if (!date && !roomId) {
+//     query.date = { $exists: true };
+//   }
+
+//   const availableSlots = await Slot.find(query).populate('room');
+
+//   return availableSlots;
+// };
 const getAvailableSlots = async (date?: string, roomId?: string) => {
   const query: any = { isBooked: false };
 
-  // if (date) {
-  //   query.date = date;
-  // }
-
+  // If roomId is provided, validate and add to query
   if (roomId) {
-    if (!mongoose.Types.ObjectId.isValid(roomId)) {
+    if (!Types.ObjectId.isValid(roomId)) {
       throw new Error('Invalid roomId');
     }
-    // Check if room exists
-    const existingRoom = await Room.findById(roomId);
-    if (!existingRoom) {
-      throw new AppError(httpStatus.NOT_FOUND, 'Room not found');
+
+    const existingRoom = await Room.find({ _id: roomId, isDeleted: false });
+    if (existingRoom.length === 0) {
+      throw new AppError(httpStatus.NOT_FOUND, 'Room not found or is deleted');
     }
 
+    query.room = roomId;
+
+    // If date is provided, add date to query
     if (date) {
-      const checkRoomforSpecifiedDate = await Slot.findOne({
+      const checkRoomForSpecifiedDate = await Slot.find({
         room: roomId,
         date: date,
       });
 
-      if (!checkRoomforSpecifiedDate) {
+      if (checkRoomForSpecifiedDate.length === 0) {
         throw new AppError(
           httpStatus.NOT_FOUND,
           'Room not found for the specified date',
@@ -127,25 +139,41 @@ const getAvailableSlots = async (date?: string, roomId?: string) => {
       }
       query.date = date;
     }
-    query.room = roomId;
   }
-  // if (roomId) {
-  //   if (!mongoose.Types.ObjectId.isValid(roomId)) {
-  //     throw new Error('Invalid roomId');
-  //   }
-  //   query.room = roomId;
-  // }
 
-  // If no date or roomId provided, return all slots that are not booked
-  if (!date && !roomId) {
+  // If no roomId is provided, fetch all rooms that are not deleted
+  if (!roomId) {
+    const rooms = await Room.find({ isDeleted: false });
+    const roomIds = rooms.map((room) => room._id); 
+
+    query.room = { $in: roomIds };
     query.date = { $exists: true };
+
+    // If date is provided but no roomId, check for slots for the specified date
+    if (date) {
+      const checkRoomsForSpecifiedDate = await Slot.find({
+        room: { $in: roomIds },
+        date: date,
+      });
+
+      if (checkRoomsForSpecifiedDate.length === 0) {
+        throw new AppError(
+          httpStatus.NOT_FOUND,
+          'Room not found for the specified date',
+        );
+      }
+      query.date = date;
+    }
   }
 
-  const availableSlots = await Slot.find(query).populate('room');
+  // Find available slots based on the constructed query
+  const availableSlots = await Slot.find(query).populate({
+    path: 'room',
+    match: { isDeleted: false }, // Only populate with rooms that are not deleted
+  });
 
   return availableSlots;
 };
-
 export const SlotService = {
   createSlots,
   getAvailableSlots,
