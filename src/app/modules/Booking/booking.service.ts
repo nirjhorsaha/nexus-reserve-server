@@ -91,7 +91,12 @@ const getAllBookings = async () => {
     .populate('room')
     .populate('slots')
     .populate('user');
-  return getAllBookings;
+
+  const filteredBookings = getAllBookings.filter(
+    (booking) => booking.isDeleted === false,
+  );
+
+  return filteredBookings;
 };
 
 const getUserBookings = async (email: string) => {
