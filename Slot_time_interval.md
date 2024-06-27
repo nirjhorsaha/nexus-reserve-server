@@ -115,21 +115,3 @@ Assuming `i = 0` (first iteration):
 So, for the first slot, `slotStartTime` would be 480 minutes (8:00 AM) and `slotEndTime` would be 540 minutes (9:00 AM).
 
 In subsequent iterations (`i > 0`), `slotStartTime` would increment by `slotDuration` each time, resulting in different start and end times for each slot until `numberOfSlots` is reached.
-
-### Explanation of Each Step:
-
--   **Step 1**: Convert the `startTime` and `endTime` from "HH" format to total minutes since midnight (`startMinutes` and `endMinutes`).
-
--   **Step 2**: Then Calculate the total duration (`totalSlotDuration`) and the number of slots (`numberOfSlots`) based on the `slotDuration`.
-
--   **Step 3**: Iterate through `numberOfSlots` and for each iteration:
-    -   Calculate `slotStartTime` and `slotEndTime`.
-    
-    -   Convert these times back to "HH" format (`startTimeHHMM` and `endTimeHHMM`).
-    
-    -   Create a new `Slot` object using the `Slot` model with attributes:
-        -   `room`: Room ID (or reference)
-        -   `date`: Date for the slots
-        -   `startTime`: Start time of the slot
-        -   `endTime`: End time of the slot
-        -   `isBooked`: Initially set to `false` indicating the slot is available.
