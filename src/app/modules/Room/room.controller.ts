@@ -3,6 +3,7 @@ import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
 import { Types } from 'mongoose';
+import noDataFound from '../../middlewares/noDataFound';
 
 const createRoom = catchAsync(async (req, res) => {
   const { name, roomNo, floorNo, capacity, pricePerSlot, amenities } = req.body;
@@ -43,12 +44,7 @@ const getSingleRoom = catchAsync(async (req, res) => {
   const room = await RoomService.getRoomById(roomId);
 
   if (!room) {
-    return sendResponse(res, {
-      success: false,
-      statusCode: httpStatus.NOT_FOUND,
-      message: 'No Data Found',
-      data: [],
-    });
+    return noDataFound(res);
   }
 
   sendResponse(res, {
@@ -63,12 +59,7 @@ const getAllRoom = catchAsync(async (req, res) => {
   const rooms = await RoomService.getAllRooms();
 
   if (rooms.length === 0) {
-    return sendResponse(res, {
-      statusCode: httpStatus.NOT_FOUND,
-      success: false,
-      message: 'No Data Found',
-      data: [],
-    });
+    return noDataFound(res);
   }
 
   sendResponse(res, {
@@ -103,15 +94,27 @@ const updatedRoom = catchAsync(async (req, res) => {
 const deleteRoom = catchAsync(async (req, res) => {
   const roomId = req.params.id;
 
-  const deletedRoom = await RoomService.deleteRoom(roomId);
+  // Check if the room exists
+  const isRoomExists = await RoomService.getRoomById(roomId);
 
-  if (!deleteRoom) {
+  if (!isRoomExists) {
     return sendResponse(res, {
       success: false,
       statusCode: httpStatus.NOT_FOUND,
-      message: 'Failed to delete room',
+      message: 'Room not found',
     });
   }
+
+  const deletedRoom = await RoomService.deleteRoom(roomId);
+
+  // if (!deleteRoom) {
+  //   return sendResponse(res, {
+  //     success: false,
+  //     statusCode: httpStatus.NOT_FOUND,
+  //     message: 'Failed to delete room',
+  //   });
+  // }
+
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,

@@ -5,6 +5,7 @@ import { BookingService } from './booking.service';
 import { Types } from 'mongoose';
 import { verifyToken } from '../../middlewares/auth';
 import AppError from '../../errors/AppError';
+import noDataFound from '../../middlewares/noDataFound';
 
 const createBooking = catchAsync(async (req, res) => {
   const bookingData = req.body;
@@ -23,12 +24,7 @@ const getBooking = catchAsync(async (req, res) => {
   const booking = await BookingService.getBooking(bookingId);
 
   if (!booking) {
-    sendResponse(res, {
-      success: false,
-      statusCode: httpStatus.NOT_FOUND,
-      message: 'No Data Found',
-      data: [],
-    });
+    return noDataFound(res);
   }
 
   sendResponse(res, {
@@ -43,12 +39,7 @@ const getAllBookings = catchAsync(async (req, res) => {
   const booking = await BookingService.getAllBookings();
 
   if (booking.length === 0) {
-    return sendResponse(res, {
-      success: false,
-      statusCode: httpStatus.NOT_FOUND,
-      message: 'No Data Found',
-      data: [],
-    });
+    return noDataFound(res);
   }
   sendResponse(res, {
     success: true,
@@ -68,14 +59,11 @@ const getUserBookings = catchAsync(async (req, res) => {
   const userEmail = decodedToken.email;
 
   const booking = await BookingService.getUserBookings(userEmail);
+
   if (booking.length === 0) {
-    sendResponse(res, {
-      success: false,
-      statusCode: httpStatus.NOT_FOUND,
-      message: 'No data found',
-      data: [],
-    });
+    return noDataFound(res);
   }
+  
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,

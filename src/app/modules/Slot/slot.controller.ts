@@ -3,6 +3,7 @@ import { SlotService } from './slot.service';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
+import noDataFound from '../../middlewares/noDataFound';
 
 const createSlot = catchAsync(async (req: Request, res: Response) => {
   const slotData = req.body;
@@ -26,12 +27,7 @@ const getAvailableSlots = catchAsync(async (req, res) => {
   );
 
   if (availableSlots.length === 0) {
-    return sendResponse(res, {
-      success: false,
-      statusCode: httpStatus.NOT_FOUND,
-      message: 'No Data Found',
-      data: [],
-    });
+    return noDataFound(res);
   }
 
   return sendResponse(res, {

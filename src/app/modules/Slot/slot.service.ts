@@ -13,31 +13,47 @@ const createSlots = async ({ room, date, startTime, endTime }: ISlot) => {
     throw new AppError(httpStatus.NOT_FOUND, 'Room not found');
   }
 
-  // chech if slot is already exists for the given room and date
+  // const existingSlots = await Slot.find({
+  //   room,
+  //   date,
+  //   $or: [
+  //     // New slot starts before existing slot and ends after existing slot starts
+  //     {
+  //       $and: [
+  //         { startTime: { $lte: startTime } },
+  //         { endTime: { $gt: startTime } },
+  //       ],
+  //     },
+  //     // New slot starts before existing slot ends and ends after existing slot ends
+  //     {
+  //       $and: [
+  //         { startTime: { $lt: endTime } },
+  //         { endTime: { $gte: endTime } }
+  //       ],
+  //     },
+  //     // New slot starts and ends within the duration of an existing slot
+  //     {
+  //       $and: [
+  //         { startTime: { $gte: startTime } },
+  //         { endTime: { $lte: endTime } },
+  //       ],
+  //     },
+  //   ],
+  // });
+ // chech if slot is already exists for the given room and date
   const existingSlots = await Slot.find({
     room,
     date,
     $or: [
-      // New slot starts before existing slot and ends after existing slot starts
       {
         $and: [
-          { startTime: { $lte: startTime } },
+          { startTime: { $lt: endTime } },
           { endTime: { $gt: startTime } },
-        ],
-      },
-      // New slot starts before existing slot ends and ends after existing slot ends
-      {
-        $and: [{ startTime: { $lt: endTime } }, { endTime: { $gte: endTime } }],
-      },
-      // New slot starts and ends within the duration of an existing slot
-      {
-        $and: [
-          { startTime: { $gte: startTime } },
-          { endTime: { $lte: endTime } },
         ],
       },
     ],
   });
+  
   if (existingSlots.length > 0) {
     throw new AppError(
       httpStatus.BAD_REQUEST,
