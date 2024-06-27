@@ -104,7 +104,7 @@ const getAvailableSlots = async (date?: string, roomId?: string) => {
   // If no roomId is provided, fetch all rooms that are not deleted
   if (!roomId) {
     const rooms = await Room.find({ isDeleted: false });
-    const roomIds = rooms.map((room) => room._id); 
+    const roomIds = rooms.map((room) => room._id);
 
     query.room = { $in: roomIds };
     query.date = { $exists: true };

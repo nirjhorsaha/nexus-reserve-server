@@ -63,7 +63,7 @@ const getUserBookings = catchAsync(async (req, res) => {
   if (booking.length === 0) {
     return noDataFound(res);
   }
-  
+
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
