@@ -15,6 +15,9 @@ const createRoomValidationSchema = z.object({
     amenities: z
       .array(z.string().min(1, 'Amenity cannot be empty'))
       .nonempty('At least one amenity is required'),
+    images: z
+      .array(z.string().url('Image must be a valid url'))
+      .nonempty('At least one image is required'),
   }),
 });
 
@@ -39,6 +42,10 @@ const updateRoomValidationSchema = z.object({
     amenities: z
       .array(z.string().min(1, 'Amenity cannot be empty'))
       .nonempty('At least one amenity is required')
+      .optional(),
+    images: z
+      .array(z.string().url('Image must be a valid url'))
+      .nonempty('At least one image is required')
       .optional(),
   }),
 });

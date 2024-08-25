@@ -10,6 +10,7 @@ const createRoom = async (data: IRoom): Promise<IRoom> => {
     capacity: data.capacity,
     pricePerSlot: data.pricePerSlot,
     amenities: data.amenities,
+    images: data.images,
     isDeleted: false,
   });
   await newRoom.save();
@@ -22,8 +23,8 @@ const getRoomById = async (id: string): Promise<IRoom | null> => {
 };
 
 const getAllRooms = async () => {
-  // return await Room.find({ isDeleted: false });
-  return await Room.find();
+  return await Room.find({ isDeleted: false });
+  // return await Room.find();
 };
 
 const updateRoom = async (

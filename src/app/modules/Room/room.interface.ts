@@ -5,5 +5,6 @@ export interface IRoom {
   capacity: number;
   pricePerSlot: number;
   amenities: string[];
+  images: string[];
   isDeleted?: boolean;
 }

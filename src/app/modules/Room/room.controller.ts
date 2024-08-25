@@ -6,7 +6,7 @@ import { Types } from 'mongoose';
 import noDataFound from '../../middlewares/noDataFound';
 
 const createRoom = catchAsync(async (req, res) => {
-  const { name, roomNo, floorNo, capacity, pricePerSlot, amenities } = req.body;
+  const { name, roomNo, floorNo, capacity, pricePerSlot, amenities, images } = req.body;
 
   // Validation for roomNo based on floorNo
   const roomNoPattern = floorNo * 100 + 100; // Base starting room number for the floor
@@ -28,6 +28,7 @@ const createRoom = catchAsync(async (req, res) => {
     capacity,
     pricePerSlot,
     amenities,
+    images,
     isDeleted: false,
   });
 
