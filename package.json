@@ -1,7 +1,7 @@
 {
-  "name": "nexus-reserve",
+  "name": "nexus-reserve-server",
   "version": "1.0.0",
-  "description": "\"A platform for seamless room reservations, transforming co-working space dynamics.\"",
+  "description": "A platform for seamless meeting room reservations for co-working space.",
   "main": "./dist/server.js",
   "scripts": {
     "build": "tsc",
