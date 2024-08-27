@@ -27,6 +27,8 @@ router.get(
   BookingController.getAllBookings,
 );
 
+router.get('/user/:id', authenticateUser, BookingController.getUserBookings);
+
 router.put(
   '/:id',
   authenticateUser,
