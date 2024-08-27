@@ -1,7 +1,7 @@
-import { Schema, model } from 'mongoose';
-import { IBooking } from './booking.interface';
+import { Schema, Types, model } from 'mongoose';
+import { BookingModel, IBooking } from './booking.interface';
 
-const bookingSchema = new Schema<IBooking>(
+const bookingSchema = new Schema<IBooking, BookingModel>(
   {
     date: {
       type: String,
@@ -48,4 +48,11 @@ const bookingSchema = new Schema<IBooking>(
   },
 );
 
-export const Booking = model<IBooking>('Booking', bookingSchema);
+bookingSchema.statics.findByIdWithPopulatedFields = function (id: Types.ObjectId) {
+  return this.findById(id)
+    .populate('room')
+    .populate('slots')
+    .populate('user');
+};
+
+export const Booking = model<IBooking, BookingModel>('Booking', bookingSchema);
