@@ -57,9 +57,9 @@ const getSingleRoom = catchAsync(async (req, res) => {
 });
 
 const getAllRoom = catchAsync(async (req, res) => {
-  const rooms = await RoomService.getAllRooms();
+  const rooms = await RoomService.getAllRooms(req.query);
 
-  if (rooms.length === 0) {
+  if (rooms.result.length === 0) {
     return noDataFound(res);
   }
 

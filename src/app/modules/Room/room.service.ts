@@ -1,17 +1,13 @@
 import { Types } from 'mongoose';
 import { IRoom } from './room.interface';
 import { Room } from './room.model';
+import QueryBuilder from '../../builder/QueryBuilder';
+import { roomSearchableFields } from './room.constant';
 
 const createRoom = async (data: IRoom): Promise<IRoom> => {
   const newRoom = new Room({
-    name: data.name,
-    roomNo: data.roomNo,
-    floorNo: data.floorNo,
-    capacity: data.capacity,
-    pricePerSlot: data.pricePerSlot,
-    amenities: data.amenities,
-    images: data.images,
-    isDeleted: false,
+    ...data,
+    isDeleted: false, 
   });
   await newRoom.save();
   return newRoom;
@@ -22,9 +18,24 @@ const getRoomById = async (id: string): Promise<IRoom | null> => {
   return await Room.findById(id);
 };
 
-const getAllRooms = async () => {
-  return await Room.find({ isDeleted: false });
-  // return await Room.find();
+// const getAllRooms = async () => {
+//   return await Room.find({ isDeleted: false });
+//   // return await Room.find();
+// };
+
+const getAllRooms = async (query: Record<string, unknown>) => {
+  const roomQuery = new QueryBuilder(Room.find({ isDeleted: false }), query)
+    .search(roomSearchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+  const result = await roomQuery.modelQuery;
+  const meta = await roomQuery.countTotal();
+  return {
+    result,
+    meta,
+  };
 };
 
 const updateRoom = async (
