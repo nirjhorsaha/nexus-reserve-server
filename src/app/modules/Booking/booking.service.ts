@@ -83,9 +83,8 @@ const createBooking = async (bookingData: IBooking) => {
 //   return getBookingsbyId;
 // };
 
-
 const getBooking = async (id: Types.ObjectId) => {
-  const getBookingsbyId = await Booking.findByIdWithPopulatedFields(id)
+  const getBookingsbyId = await Booking.findByIdWithPopulatedFields(id);
   return getBookingsbyId;
 };
 
@@ -101,7 +100,6 @@ const getAllBookings = async () => {
 
   return filteredBookings;
 };
-
 
 const getUserBookings = async (email: string) => {
   const user = await User.findOne({ email });
@@ -160,6 +158,24 @@ const deleteBooking = async (id: Types.ObjectId) => {
       throw new AppError(httpStatus.NOT_FOUND, 'Booking not found');
     }
 
+    // Check if the booking is already marked as deleted
+    if (booking.isDeleted) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Booking is already deleted');
+    }
+
+    // Allow deletion if the booking is confirmed as 'canceled'
+    if (booking.isConfirmed === 'canceled') {
+      const deletedBooking = await Booking.findByIdAndUpdate(
+        id,
+        { isDeleted: true },
+        { new: true, session },
+      );
+
+      await session.commitTransaction();
+      session.endSession();
+      return deletedBooking;
+    }
+
     // Check if any slot is already booked
     const bookedSlots = await Slot.find({
       _id: { $in: booking.slots },
@@ -168,14 +184,17 @@ const deleteBooking = async (id: Types.ObjectId) => {
 
     if (bookedSlots.length > 0) {
       // If there are slots that are still booked
-      throw new AppError(httpStatus.BAD_REQUEST, 'Cannot delete booking as some slots are already booked');
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        'Cannot delete booking as some slots are already booked',
+      );
     }
 
     // Proceed with marking the booking as deleted
     const deletedBooking = await Booking.findByIdAndUpdate(
-      // id,
-      // { isDeleted: true },
-      // { new: true, session }
+      id,
+      { isDeleted: true },
+      { new: true, session },
     );
 
     await session.commitTransaction();
@@ -185,7 +204,7 @@ const deleteBooking = async (id: Types.ObjectId) => {
     await session.abortTransaction();
     session.endSession();
     throw new AppError(httpStatus.BAD_REQUEST, 'Failed to delete booking');
-  } 
+  }
 };
 
 export const BookingService = {
