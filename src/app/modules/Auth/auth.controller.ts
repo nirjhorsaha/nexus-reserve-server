@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
-import { authService } from './auth.service';
+import { AuthService } from './auth.service';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
-import generateToken from '../../utils/jwt';
+import config from '../../config';
+
 
 const userlogin = catchAsync(async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-
-  const user = await authService.loginUser(email, password);
+  const user = await AuthService.loginUser(req.body);
+  const {refreshToken, ...userData } = user
 
   if (!user) {
     sendResponse(res, {
@@ -18,26 +18,38 @@ const userlogin = catchAsync(async (req: Request, res: Response) => {
     });
   }
 
-  // Generate JWT token
-  const token = generateToken(user.email, user.role);
+  res.cookie('refreshToken', refreshToken, {
+    secure: config.NODE_ENV === 'production',
+    httpOnly: true
+  })
+
 
   // Return success response with token and user data
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
     message: 'User logged in successfully',
-    token: token,
     data: {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      role: user.role,
-      address: user.address,
+      ...userData
     },
   });
 });
 
-export const authController = {
+
+const refreshToken = catchAsync(async (req, res) => {
+  const { refreshToken } = req.cookies;
+  const result = await AuthService.refreshToken(refreshToken);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Access token is retrieved succesfully!',
+    data: result,
+  });
+});
+
+
+export const AuthController = {
   userlogin,
+  refreshToken,
 };
