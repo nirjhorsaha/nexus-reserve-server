@@ -7,10 +7,3 @@ export interface ISlot {
   endTime: string;
   isBooked?: boolean;
 }
-
-export interface CreateSlotInput {
-  room: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-}

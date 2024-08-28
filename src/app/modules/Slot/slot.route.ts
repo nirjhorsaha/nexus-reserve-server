@@ -16,4 +16,6 @@ router.post(
 
 router.get('/availability', SlotController.getAvailableSlots);
 
+router.get('/', SlotController.getAllSlots )
+
 export const SlotRoutes = router;

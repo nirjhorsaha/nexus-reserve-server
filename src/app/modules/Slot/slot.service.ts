@@ -135,7 +135,17 @@ const getAvailableSlots = async (date?: string, roomId?: string) => {
   return availableSlots;
 };
 
+const getAllSlots = async (): Promise<ISlot[]> => {
+  const slots = await Slot.find().populate({
+    path: 'room',
+    match: { isDeleted: false }, // Only populate with rooms that are not deleted
+  });
+
+  return slots;
+};
+
 export const SlotService = {
   createSlots,
   getAvailableSlots,
+  getAllSlots,
 };
