@@ -7,7 +7,7 @@ import { roomSearchableFields } from './room.constant';
 const createRoom = async (data: IRoom): Promise<IRoom> => {
   const newRoom = new Room({
     ...data,
-    isDeleted: false, 
+    isDeleted: false,
   });
   await newRoom.save();
   return newRoom;
@@ -18,10 +18,6 @@ const getRoomById = async (id: string): Promise<IRoom | null> => {
   return await Room.findById(id);
 };
 
-// const getAllRooms = async () => {
-//   return await Room.find({ isDeleted: false });
-//   // return await Room.find();
-// };
 
 const getAllRooms = async (query: Record<string, unknown>) => {
   const roomQuery = new QueryBuilder(Room.find({ isDeleted: false }), query)
