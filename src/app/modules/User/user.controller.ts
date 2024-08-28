@@ -29,7 +29,7 @@ const getAllUsers = catchAsync(async (req, res) => {
   });
 });
 
-export const userController = {
+export const UserController = {
   userSignUp,
   getAllUsers,
 };

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-this-alias */
 import { Schema, model } from 'mongoose';
-import { IUser } from './user.interface';
+import { IUser, UserModel } from './user.interface';
 import config from '../../config';
 import bcrypt from 'bcrypt';
 
@@ -65,4 +65,15 @@ userSchema.set('toJSON', {
   },
 });
 
-export const User = model<IUser>('User', userSchema);
+userSchema.statics.findUserByEmail = async function (email: string) {
+  return await User.findOne({ email });
+};
+
+userSchema.statics.isPasswordMatched = async function (
+  plainTextPassword,
+  hashedPassword,
+) {
+  return await bcrypt.compare(plainTextPassword, hashedPassword);
+};
+
+export const User = model<IUser,UserModel>('User', userSchema);
