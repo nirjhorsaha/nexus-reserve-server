@@ -11,6 +11,22 @@ const createSlots = async ({ room, date, startTime, endTime }: ISlot) => {
   if (!isRoomExists) {
     throw new AppError(httpStatus.NOT_FOUND, 'Room not found');
   }
+  
+  if (isRoomExists.isDeleted) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Room is deleted and cannot be used');
+  }
+
+  // Check if the provided date is in the past
+  const providedDate = new Date(date);
+  const currentDate = new Date();
+  
+  // Reset the time part of currentDate to midnight for accurate date comparison
+  currentDate.setHours(0, 0, 0, 0);
+  
+  // Ensure provided date is at least today
+  if (providedDate < currentDate) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Cannot create slots for a past date');
+  }
 
   // chech if slot is already exists for the given room and date
   const existingSlots = await Slot.find({
@@ -59,6 +75,7 @@ const createSlots = async ({ room, date, startTime, endTime }: ISlot) => {
         .toString()
         .padStart(2, '0')}:${(slotEndTime % 60).toString().padStart(2, '0')}`,
       isBooked: false,
+      isDeleted: false,
     });
     slots.push(slot);
   }
@@ -126,7 +143,7 @@ const getAvailableSlots = async (date?: string, roomId?: string) => {
     }
   }
 
-  // Find available slots based on the constructed query
+  // Find available slots based on query
   const availableSlots = await Slot.find(query).populate({
     path: 'room',
     match: { isDeleted: false }, // Only populate with rooms that are not deleted
@@ -144,8 +161,98 @@ const getAllSlots = async (): Promise<ISlot[]> => {
   return slots;
 };
 
+const updateSlot = async (slotId: string, updateData: Partial<ISlot>) => {
+  if (!Types.ObjectId.isValid(slotId)) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Invalid slotId');
+  }
+
+  const slot = await Slot.findById(slotId);
+  if (!slot) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Slot not found');
+  }
+
+  // Check if the slot is marked as deleted or is already booked
+  if (slot.isDeleted || slot.isBooked) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      slot.isDeleted
+        ? 'Cannot update a deleted slot'
+        : 'Cannot update a booked slot',
+    );
+  }
+
+  if (updateData.room) {
+    const isRoomExists = await Room.findById(updateData.room);
+    if (!isRoomExists) {
+      throw new AppError(httpStatus.NOT_FOUND, 'Room not found');
+    }
+  }
+
+  // Check for time conflicts if startTime or endTime is being updated
+  if (updateData.startTime || updateData.endTime) {
+    const startTime = updateData.startTime || slot.startTime;
+    const endTime = updateData.endTime || slot.endTime;
+
+    const conflictingSlots = await Slot.find({
+      room: slot.room,
+      date: slot.date,
+      _id: { $ne: slotId }, // Exclude the current slot
+      $or: [
+        {
+          $and: [
+            { startTime: { $lt: endTime } }, // Existing slot's start time is before the new end time
+            { endTime: { $gt: startTime } }, // Existing slot's end time is after the new start time
+          ],
+        },
+      ],
+    });
+
+    if (conflictingSlots.length > 0) {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        'Another slot with overlapping time exists on the same date',
+      );
+    }
+  }
+
+  const updatedSlot = await Slot.findByIdAndUpdate(
+    slotId,
+    updateData, {
+    new: true,
+  });
+
+  return updatedSlot;
+};
+
+const deleteSlot = async (slotId: string) => {
+  if (!Types.ObjectId.isValid(slotId)) {
+    throw new AppError(httpStatus.BAD_REQUEST, 'Invalid slotId');
+  }
+
+  const slot = await Slot.findById(slotId);
+  if (!slot) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Slot not found');
+  }
+
+  // Check if the slot is already booked
+  if (slot.isBooked) {
+    throw new AppError(httpStatus.FORBIDDEN, 'Cannot delete a booked slot');
+  }
+
+  // If not booked, proceed to soft delete the slot
+  const updatedSlot = await Slot.findByIdAndUpdate(
+    slotId,
+    { isDeleted: true },
+    { new: true },
+  );
+
+  return updatedSlot;
+};
+
 export const SlotService = {
   createSlots,
   getAvailableSlots,
   getAllSlots,
+  updateSlot,
+  deleteSlot,
 };

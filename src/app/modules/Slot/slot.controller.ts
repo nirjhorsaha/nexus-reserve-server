@@ -7,7 +7,7 @@ import noDataFound from '../../middlewares/noDataFound';
 
 const createSlot = catchAsync(async (req: Request, res: Response) => {
   const slotData = req.body;
-
+  
   const savedSlots = await SlotService.createSlots(slotData);
 
   sendResponse(res, {
@@ -53,9 +53,41 @@ const getAllSlots = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateSlot = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const updateData = req.body;
+
+  const updatedSlot = await SlotService.updateSlot(id, updateData);
+
+  if (!updatedSlot) {
+    return noDataFound(res);
+  }
+
+  return sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Slot updated successfully',
+    data: updatedSlot,
+  });
+});
+
+const deleteSlot = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  await SlotService.deleteSlot(id);
+
+  return sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.OK,
+    message: 'Slot deleted successfully',
+  });
+});
+
 
 export const SlotController = {
   createSlot,
   getAvailableSlots,
-  getAllSlots
+  getAllSlots,
+  updateSlot,
+  deleteSlot,
 };
