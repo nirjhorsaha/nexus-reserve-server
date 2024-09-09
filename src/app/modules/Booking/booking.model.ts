@@ -26,11 +26,14 @@ const bookingSchema = new Schema<IBooking, BookingModel>(
     },
     totalAmount: {
       type: Number,
-      // required: true,
     },
     isConfirmed: {
       type: String,
       enum: ['confirmed', 'unconfirmed', 'canceled'],
+    },
+    status: {
+      type: String,
+      enum: ['approved', 'rejected'],
     },
     // isConfirmed: {
     //   type: String,
@@ -48,6 +51,7 @@ const bookingSchema = new Schema<IBooking, BookingModel>(
   },
 );
 
+// Static methods to find a bookings by id
 bookingSchema.statics.findByIdWithPopulatedFields = function (id: Types.ObjectId) {
   return this.findById(id)
     .populate('room')

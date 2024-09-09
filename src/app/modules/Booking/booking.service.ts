@@ -32,9 +32,9 @@ const createBooking = async (bookingData: IBooking) => {
       isBooked: false,
     }).session(session);
 
-    if (bookingSlots.length !== slots.length) {
-      throw new AppError(httpStatus.NOT_FOUND, 'Slots not found');
-    }
+    // if (bookingSlots.length !== slots.length) {
+    //   throw new AppError(httpStatus.NOT_FOUND, 'Slots not found');
+    // }
 
     // calculate total amount
     const totalAmount = bookingSlots.length * room.pricePerSlot;
@@ -149,7 +149,7 @@ const deleteBooking = async (id: Types.ObjectId) => {
   try {
     // Find the booking to be deleted
     const booking = await Booking.findById(id)
-      .populate('slots') // Fetch slots associated with the booking
+      .populate('slots')
       .populate('room')
       .populate('user')
       .session(session);
@@ -163,27 +163,21 @@ const deleteBooking = async (id: Types.ObjectId) => {
       throw new AppError(httpStatus.BAD_REQUEST, 'Booking is already deleted');
     }
 
-    // Allow deletion if the booking is confirmed as 'canceled'
-    if (booking.isConfirmed === 'canceled') {
-      const deletedBooking = await Booking.findByIdAndUpdate(
-        id,
-        { isDeleted: true },
-        { new: true, session },
+    // Check if the booking is confirmed as 'canceled'
+    if (booking.isConfirmed !== 'canceled') {
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        'Booking is not canceled and cannot be deleted',
       );
-
-      await session.commitTransaction();
-      session.endSession();
-      return deletedBooking;
     }
 
-    // Check if any slot is already booked
+    // Check if any slot is booked
     const bookedSlots = await Slot.find({
       _id: { $in: booking.slots },
       isBooked: true,
     }).session(session);
 
     if (bookedSlots.length > 0) {
-      // If there are slots that are still booked
       throw new AppError(
         httpStatus.BAD_REQUEST,
         'Cannot delete booking as some slots are already booked',
@@ -203,7 +197,16 @@ const deleteBooking = async (id: Types.ObjectId) => {
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
-    throw new AppError(httpStatus.BAD_REQUEST, 'Failed to delete booking');
+
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    // Handle unexpected errors
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      'Failed to delete booking',
+    );
   }
 };
 

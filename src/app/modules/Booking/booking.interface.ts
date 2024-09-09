@@ -8,9 +8,11 @@ export interface IBooking {
   date: string;
   totalAmount?: number;
   isConfirmed?: 'confirmed' | 'unconfirmed' | 'canceled';
+  status?: 'approved' | 'rejected' 
   isDeleted?: boolean;
 }
 
+// Method to find bookings by id
 export interface BookingModel extends Model<IBooking> {
   findByIdWithPopulatedFields(id: Types.ObjectId): Promise<IBooking | null>;
 }

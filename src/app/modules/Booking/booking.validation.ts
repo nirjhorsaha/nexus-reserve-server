@@ -26,6 +26,7 @@ const createBookingValidationSchema = z.object({
       .min(0, { message: 'Total amount must be a positive number' })
       .optional(),
     isConfirmed: z.enum(['confirmed', 'unconfirmed', 'canceled']).optional(),
+    status: z.enum(['approved', 'rejected']).optional(),
     isDeleted: z.boolean().optional(),
   }),
 });
@@ -58,6 +59,7 @@ const updateBookingValidationSchema = z.object({
     .min(0, { message: 'Total amount must be a positive number' })
     .optional(),
   isConfirmed: z.enum(['confirmed', 'unconfirmed', 'canceled']).optional(),
+  status: z.enum(['approved', 'rejected']).optional(),
   isDeleted: z.boolean().optional(),
 });
 

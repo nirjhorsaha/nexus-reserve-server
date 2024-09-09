@@ -27,12 +27,16 @@ router.get(
   BookingController.getAllBookings,
 );
 
-router.get('/user/:id', authenticateUser, BookingController.getUserBookings);
+router.get(
+  '/user/my-bookings',
+  authenticateUser,
+  BookingController.getUserBookings,
+);
 
-router.put(
+router.patch(
   '/:id',
   authenticateUser,
-  authorizeAdmin,
+  // authorizeAdmin,
   validateRequest(BookingValidation.updateBookingValidationSchema),
   BookingController.updateBooking,
 );
