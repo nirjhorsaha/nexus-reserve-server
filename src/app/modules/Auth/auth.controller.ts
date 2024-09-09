@@ -5,10 +5,9 @@ import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
 import config from '../../config';
 
-
 const userlogin = catchAsync(async (req: Request, res: Response) => {
   const user = await AuthService.loginUser(req.body);
-  const {refreshToken, ...userData } = user
+  const { refreshToken, ...userData } = user;
 
   if (!user) {
     sendResponse(res, {
@@ -18,11 +17,11 @@ const userlogin = catchAsync(async (req: Request, res: Response) => {
     });
   }
 
+  // Set the refresh token in an HTTP-only cookie
   res.cookie('refreshToken', refreshToken, {
     secure: config.NODE_ENV === 'production',
-    httpOnly: true
-  })
-
+    httpOnly: true,
+  });
 
   // Return success response with token and user data
   sendResponse(res, {
@@ -30,12 +29,12 @@ const userlogin = catchAsync(async (req: Request, res: Response) => {
     statusCode: httpStatus.OK,
     message: 'User logged in successfully',
     data: {
-      ...userData
+      ...userData,
     },
   });
 });
 
-
+// Function to handle refresh token
 const refreshToken = catchAsync(async (req, res) => {
   const { refreshToken } = req.cookies;
   const result = await AuthService.refreshToken(refreshToken);
@@ -47,7 +46,6 @@ const refreshToken = catchAsync(async (req, res) => {
     data: result,
   });
 });
-
 
 export const AuthController = {
   userlogin,

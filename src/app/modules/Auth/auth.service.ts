@@ -7,25 +7,9 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { createToken } from './auth.utils';
 
 
-// const loginUser = async (email: string, password: string) => {
-//   const user = await User.findOne({ email });
-
-//   if (!user) {
-//     throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
-//   }
-
-//   const isPasswordMatch = await bcrypt.compare(password, user.password);
-
-//   if (!isPasswordMatch) {
-//     throw new AppError(httpStatus.UNAUTHORIZED, 'Invalid Password!');
-//   }
-//   return user;
-// }
-
 const loginUser = async (payload: TLoginUser) => {
-  // const user = await User.findOne({ email: payload?.email }); 
+  // const user = await User.findOne({ email: payload?.email });
   const user = await User.findUserByEmail(payload.email);
-
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
@@ -60,20 +44,17 @@ const loginUser = async (payload: TLoginUser) => {
   };
 };
 
-
-
 const refreshToken = async (token: string) => {
   // checking if the given token is valid
   const decoded = jwt.verify(
     token,
     config.jwt_refresh_secret as string,
-  ) as JwtPayload
+  ) as JwtPayload;
 
   const { email } = decoded;
 
   // checking if the user is exist
   const user = await User.findUserByEmail(email);
- 
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
@@ -87,7 +68,7 @@ const refreshToken = async (token: string) => {
   const accessToken = createToken(
     jwtPayload,
     config.jwt_access_secret as string,
-    config.jwt_access_expires_in as string, 
+    config.jwt_access_expires_in as string,
   );
 
   return {
@@ -97,5 +78,21 @@ const refreshToken = async (token: string) => {
 
 export const AuthService = {
   loginUser,
-  refreshToken
+  refreshToken,
 };
+
+
+// const loginUser = async (email: string, password: string) => {
+//   const user = await User.findOne({ email });
+
+//   if (!user) {
+//     throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
+//   }
+
+//   const isPasswordMatch = await bcrypt.compare(password, user.password);
+
+//   if (!isPasswordMatch) {
+//     throw new AppError(httpStatus.UNAUTHORIZED, 'Invalid Password!');
+//   }
+//   return user;
+// }
