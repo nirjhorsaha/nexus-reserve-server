@@ -13,7 +13,6 @@ class QueryBuilder<T> {
   // * Adds a search condition to the query based on the provided searchable fields.
   search(searchableFields: string[]) {
     const searchTerm = this?.query?.searchTerm;
-    console.log(searchTerm);
 
     if (searchTerm) {
       this.modelQuery = this.modelQuery.find({
@@ -44,7 +43,7 @@ class QueryBuilder<T> {
 
   // * Sorts the query results based on the provided sort string.
   sort() {
-    const sortField = (this?.query?.sort as string) || 'pricePerSlot'; // Default sort field is 'price'
+    const sortField = (this?.query?.sort as string) || 'price'; // Default sort field is 'price'
 
     const isDescending = sortField.startsWith('-'); // If the sorting is descending
 
