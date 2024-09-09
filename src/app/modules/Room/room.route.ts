@@ -18,7 +18,7 @@ router.get('/', RoomController.getAllRoom);
 
 router.get('/:id', RoomController.getSingleRoom);
 
-router.put(
+router.patch(
   '/:id',
   authenticateUser,
   authorizeAdmin,

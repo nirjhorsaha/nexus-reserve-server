@@ -4,9 +4,12 @@ import sendResponse from '../../utils/sendResponse';
 import httpStatus from 'http-status';
 import { Types } from 'mongoose';
 import noDataFound from '../../middlewares/noDataFound';
+// import { Booking } from '../Booking/booking.model';
+// import AppError from '../../errors/AppError';
 
 const createRoom = catchAsync(async (req, res) => {
-  const { name, roomNo, floorNo, capacity, pricePerSlot, amenities, images } = req.body;
+  const { name, roomNo, floorNo, capacity, pricePerSlot, amenities, images } =
+    req.body;
 
   // Validation for roomNo based on floorNo
   const roomNoPattern = floorNo * 100 + 100; // Base starting room number for the floor
@@ -23,8 +26,8 @@ const createRoom = catchAsync(async (req, res) => {
 
   const newRoom = await RoomService.createRoom({
     name,
-    roomNo,
     floorNo,
+    roomNo,
     capacity,
     pricePerSlot,
     amenities,
@@ -73,9 +76,29 @@ const getAllRoom = catchAsync(async (req, res) => {
 
 const updatedRoom = catchAsync(async (req, res) => {
   const roomId = new Types.ObjectId(req.params.id);
-  const updatedRoomData = req.body;
+  const { roomNo, floorNo, ...updatedRoomData } = req.body;
 
-  const updatedRoom = await RoomService.updateRoom(roomId, updatedRoomData);
+  // Validation for roomNo based on floorNo (if provided)
+  if (roomNo && floorNo) {
+    const roomNoPattern = floorNo * 100 + 100; // Base starting room number for the floor
+    const roomNoStart = roomNoPattern + 1; // Start of the valid room number range for the floor
+    const roomNoEnd = roomNoPattern + 100; // End of the valid room number range for the floor
+
+    if (roomNo < roomNoStart || roomNo > roomNoEnd) {
+      return sendResponse(res, {
+        success: false,
+        statusCode: httpStatus.BAD_REQUEST,
+        message: `Invalid room no.!! For floor no: ${floorNo}, room no should be between ${roomNoStart} and ${roomNoEnd}.`,
+      });
+    }
+  }
+
+  // Proceed with updating the room
+  const updatedRoom = await RoomService.updateRoom(roomId, {
+    ...updatedRoomData,
+    roomNo,
+    floorNo,
+  });
 
   if (!updatedRoom) {
     return sendResponse(res, {
@@ -84,6 +107,7 @@ const updatedRoom = catchAsync(async (req, res) => {
       message: 'Room not found.!',
     });
   }
+
   sendResponse(res, {
     success: true,
     statusCode: httpStatus.OK,
@@ -91,6 +115,7 @@ const updatedRoom = catchAsync(async (req, res) => {
     data: updatedRoom,
   });
 });
+
 
 const deleteRoom = catchAsync(async (req, res) => {
   const roomId = req.params.id;
@@ -105,6 +130,11 @@ const deleteRoom = catchAsync(async (req, res) => {
       message: 'Room not found',
     });
   }
+
+  // const chechBookedRoom = await Booking.findById(roomId);
+  // if (chechBookedRoom) {
+  //   throw new AppError(httpStatus.FORBIDDEN, "Booked room won't be deleted !");
+  // }
 
   const deletedRoom = await RoomService.deleteRoom(roomId);
 
