@@ -8,8 +8,10 @@ export interface IBooking {
   date: string;
   totalAmount?: number;
   isConfirmed?: 'confirmed' | 'unconfirmed' | 'canceled';
-  status?: 'approved' | 'rejected' 
+  status?: 'approved' | 'rejected';
   isDeleted?: boolean;
+  paymentStatus?: string;
+  transactionID?: string;
 }
 
 // Method to find bookings by id

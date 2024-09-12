@@ -6,6 +6,7 @@ import { User } from '../User/user.model';
 import { Slot } from '../Slot/slot.model';
 import { Booking } from './booking.model';
 import mongoose, { Types } from 'mongoose';
+import { initiatePayment } from '../Payment/payment.utils';
 
 const createBooking = async (bookingData: IBooking) => {
   const { date, slots, room: roomId, user: userId } = bookingData;
@@ -47,6 +48,8 @@ const createBooking = async (bookingData: IBooking) => {
       { session },
     );
 
+    const transactionID = `TXN-${Date.now()}`;
+
     const booking = new Booking({
       date,
       slots: bookingSlots,
@@ -55,6 +58,8 @@ const createBooking = async (bookingData: IBooking) => {
       totalAmount,
       isConfirmed: 'unconfirmed',
       isDeleted: false,
+      paymentStatus: 'Pending',
+      transactionID,
     });
     await booking.save({ session });
 
@@ -64,10 +69,21 @@ const createBooking = async (bookingData: IBooking) => {
       { path: 'user' },
     ]);
 
+    const paymentData = {
+      transactionID,
+      totalAmount,
+      customerName: user.name,
+      customerEmail: user.email,
+      customerPhone: user.phone,
+      customerAddress: user.address,
+    };
+
+    const paymentSession = await initiatePayment(paymentData);
+
     await session.commitTransaction();
     session.endSession();
 
-    return booking;
+    return paymentSession;
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
@@ -109,7 +125,7 @@ const getUserBookings = async (email: string) => {
   }
 
   // Find bookings where user ID matches
-  const bookings = await Booking.find({ user: user._id })
+  const bookings = await Booking.find({ user: user._id, isDeleted: false })
     .populate('room')
     .populate('slots')
     .populate('user');
@@ -120,18 +136,67 @@ const updateBooking = async (
   bookingId: Types.ObjectId,
   updatedData: Partial<IBooking>,
 ) => {
-  const updateBooking = await Booking.findByIdAndUpdate(
-    bookingId,
-    updatedData,
-    {
-      new: true,
-    },
-  )
-    .populate('room')
-    .populate('slots')
-    .populate('user');
-  return updateBooking;
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    // Find the existing booking
+    const existingBooking = await Booking.findById(bookingId)
+      .populate('slots')
+      .session(session);
+
+    if (!existingBooking) {
+      throw new AppError(httpStatus.NOT_FOUND, 'Booking not found');
+    }
+
+    // Check if booking is being canceled
+    if (updatedData.isConfirmed === 'canceled') {
+      // Update the slots to set isBooked to false
+      await Slot.updateMany(
+        { _id: { $in: existingBooking.slots } },
+        { isBooked: false },
+        { session },
+      );
+    }
+
+    // Proceed to update the booking with new data
+    const updatedBooking = await Booking.findByIdAndUpdate(
+      bookingId,
+      updatedData,
+      { new: true, session },
+    )
+      .populate('room')
+      .populate('slots')
+      .populate('user');
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return updatedBooking;
+  } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+
+    throw new AppError(httpStatus.BAD_REQUEST, 'Failed to update booking');
+  }
 };
+
+// const updateBooking = async (
+//   bookingId: Types.ObjectId,
+//   updatedData: Partial<IBooking>,
+// ) => {
+//   const updateBooking = await Booking.findByIdAndUpdate(
+//     bookingId,
+//     updatedData,
+//     {
+//       new: true,
+//     },
+//   )
+//     .populate('room')
+//     .populate('slots')
+//     .populate('user');
+//   return updateBooking;
+// };
 
 // const deleteBooking = async (id: Types.ObjectId) => {
 //   const deleteBooking = await Booking.findByIdAndUpdate(
