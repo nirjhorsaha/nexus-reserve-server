@@ -4,6 +4,7 @@ import { RoomsRoutes } from '../modules/Room/room.route';
 import { SlotRoutes } from '../modules/Slot/slot.route';
 import { BookingRoutes } from '../modules/Booking/booking.route';
 import { UserRoutes } from '../modules/User/user.route';
+import { PaymentRoutes } from '../modules/Payment/payments.routes';
 
 const router = Router();
 
@@ -28,6 +29,10 @@ const moduleRoutes = [
     path: '/bookings',
     route: BookingRoutes,
   },
+  {
+    path: '/payment',
+    route: PaymentRoutes,
+  }
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
