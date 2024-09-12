@@ -76,4 +76,4 @@ userSchema.statics.isPasswordMatched = async function (
   return await bcrypt.compare(plainTextPassword, hashedPassword);
 };
 
-export const User = model<IUser,UserModel>('User', userSchema);
+export const User = model<IUser, UserModel>('User', userSchema);

@@ -6,7 +6,6 @@ import config from '../../config';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { createToken } from './auth.utils';
 
-
 const loginUser = async (payload: TLoginUser) => {
   // const user = await User.findOne({ email: payload?.email });
   const user = await User.findUserByEmail(payload.email);
@@ -80,7 +79,6 @@ export const AuthService = {
   loginUser,
   refreshToken,
 };
-
 
 // const loginUser = async (email: string, password: string) => {
 //   const user = await User.findOne({ email });

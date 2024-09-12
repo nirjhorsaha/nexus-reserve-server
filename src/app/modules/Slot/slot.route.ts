@@ -16,7 +16,7 @@ router.post(
 
 router.get('/availability', SlotController.getAvailableSlots);
 
-router.get('/', SlotController.getAllSlots)
+router.get('/', SlotController.getAllSlots);
 
 router.patch(
   '/:id',
@@ -35,4 +35,3 @@ router.delete(
 );
 
 export const SlotRoutes = router;
-

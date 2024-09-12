@@ -32,7 +32,7 @@ const moduleRoutes = [
   {
     path: '/payment',
     route: PaymentRoutes,
-  }
+  },
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

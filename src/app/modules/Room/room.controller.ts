@@ -116,7 +116,6 @@ const updatedRoom = catchAsync(async (req, res) => {
   });
 });
 
-
 const deleteRoom = catchAsync(async (req, res) => {
   const roomId = req.params.id;
 
@@ -130,7 +129,7 @@ const deleteRoom = catchAsync(async (req, res) => {
       message: 'Room not found',
     });
   }
-  
+
   const deletedRoom = await RoomService.deleteRoom(roomId);
 
   // if (!deleteRoom) {

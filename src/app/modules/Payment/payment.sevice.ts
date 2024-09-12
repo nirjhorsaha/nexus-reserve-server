@@ -2,43 +2,42 @@ import { join } from 'path';
 import { verifyPayment } from './payment.utils';
 import { readFileSync } from 'fs';
 import { Booking } from '../Booking/booking.model';
-import { Room } from '../Room/room.model'; 
-import { Slot } from '../Slot/slot.model'; 
+import { Room } from '../Room/room.model';
+import { Slot } from '../Slot/slot.model';
 import { IBooking } from '../Booking/booking.interface';
 import { IRoom } from '../Room/room.interface';
 import { ISlot } from '../Slot/slot.interface';
 
 const confirmationService = async (transactionID: string) => {
-    const verifyResponse = await verifyPayment(transactionID); // Verify payment
+  const verifyResponse = await verifyPayment(transactionID); // Verify payment
 
-    let message = '';
-    let bookingData: IBooking | null = null;
-    let roomData: IRoom | null = null;
-    let slotData: ISlot[] = [];
+  let message = '';
+  let bookingData: IBooking | null = null;
+  let roomData: IRoom | null = null;
+  let slotData: ISlot[] = [];
 
-    // Find booking using transactionID
-    bookingData = await Booking.findOne({ transactionID })
-        .populate('slots',)
-        .populate('room'); 
-    
+  // Find booking using transactionID
+  bookingData = await Booking.findOne({ transactionID })
+    .populate('slots')
+    .populate('room');
 
-    const roomId = bookingData?.room as unknown as string; // Extract room ID from booking data
-    const slotIds = bookingData?.slots.map((slot) => slot._id);   // Extract slot IDs from booking data
+  const roomId = bookingData?.room as unknown as string; // Extract room ID from booking data
+  const slotIds = bookingData?.slots.map((slot) => slot._id); // Extract slot IDs from booking data
 
-    roomData = await Room.findById(roomId);
+  roomData = await Room.findById(roomId);
 
-    slotData = await Slot.find({ _id: { $in: slotIds } });
+  slotData = await Slot.find({ _id: { $in: slotIds } });
 
-    // Check if slotData is an array
-    if (!Array.isArray(slotData)) {
-        return `<h1 class='failed-payment'>Error retrieving slot details!</h1>`;
-    }
+  // Check if slotData is an array
+  if (!Array.isArray(slotData)) {
+    return `<h1 class='failed-payment'>Error retrieving slot details!</h1>`;
+  }
 
-    if (verifyResponse && verifyResponse.pay_status === 'Successful') {
-        bookingData = await Booking.findOneAndUpdate(
-        { transactionID },
-        { paymentStatus: 'Paid', isConfirmed: 'confirmed' },
-        { new: true }, // Return updated booking data
+  if (verifyResponse && verifyResponse.pay_status === 'Successful') {
+    bookingData = await Booking.findOneAndUpdate(
+      { transactionID },
+      { paymentStatus: 'Paid', isConfirmed: 'confirmed' },
+      { new: true }, // Return updated booking data
     );
 
     const roomName = roomData?.name;
@@ -63,9 +62,15 @@ const confirmationService = async (transactionID: string) => {
                 <tr>
                     <th style="border: 1px solid #ddd; padding: 8px;">Slot Details</th>
                         <td style="border: 1px solid #ddd; padding: 8px;">
-                            ${slotData.map((slot) => `<div><li><strong>Date</strong>: ${slot.date}, 
+                            ${slotData
+                              .map(
+                                (
+                                  slot,
+                                ) => `<div><li><strong>Date</strong>: ${slot.date}, 
                             <strong>Start Time:</strong> ${slot?.startTime}, 
-                            <strong>End Time:</strong> ${slot?.endTime}</li></div>`).join('')}
+                            <strong>End Time:</strong> ${slot?.endTime}</li></div>`,
+                              )
+                              .join('')}
                         </td>
                 </tr>
                 <tr>
@@ -79,22 +84,22 @@ const confirmationService = async (transactionID: string) => {
                 </table>
                 <a href="http://localhost:5173/" class="button">Go to Home</a>
                 <p style='text-align: center'><strong>Thank you for choosing Nexus Reserve!</strong></p>`;
-    } else {
+  } else {
     message = `<h1 class='failed-payment'>Payment Failed!</h1>
                 <h3>Oops! Something went wrong with your payment.
                 <span class="bold">Please verify your payment information and try again</span>!</h3>
                 <p>If you need assistance, our support team is here to help.</p>
                 <a href="http://localhost:5173/" class="button">Go to Home</a>`;
-}
+  }
 
-    // Read and update the HTML template
-    const filePath = join(__dirname, '../../../../public/confirmation.html');
-    // const filePath = join(__dirname, '../../views/confirmation.html');
-    let template = readFileSync(filePath, 'utf8');
-    template = template.replace('{{message}}', message);
-    return template;
+  // Read and update the HTML template
+  const filePath = join(__dirname, '../../../../public/confirmation.html');
+  // const filePath = join(__dirname, '../../views/confirmation.html');
+  let template = readFileSync(filePath, 'utf8');
+  template = template.replace('{{message}}', message);
+  return template;
 };
 
 export const PaymentService = {
-    confirmationService,
+  confirmationService,
 };

@@ -11,21 +11,27 @@ const createSlots = async ({ room, date, startTime, endTime }: ISlot) => {
   if (!isRoomExists) {
     throw new AppError(httpStatus.NOT_FOUND, 'Room not found');
   }
-  
+
   if (isRoomExists.isDeleted) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Room is deleted and cannot be used');
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Room is deleted and cannot be used',
+    );
   }
 
   // Check if the provided date is in the past
   const providedDate = new Date(date);
   const currentDate = new Date();
-  
+
   // Reset the time part of currentDate to midnight for accurate date comparison
   currentDate.setHours(0, 0, 0, 0);
-  
+
   // Ensure provided date is at least today
   if (providedDate < currentDate) {
-    throw new AppError(httpStatus.BAD_REQUEST, 'Cannot create slots for a past date');
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      'Cannot create slots for a past date',
+    );
   }
 
   // chech if slot is already exists for the given room and date
@@ -215,9 +221,7 @@ const updateSlot = async (slotId: string, updateData: Partial<ISlot>) => {
     }
   }
 
-  const updatedSlot = await Slot.findByIdAndUpdate(
-    slotId,
-    updateData, {
+  const updatedSlot = await Slot.findByIdAndUpdate(slotId, updateData, {
     new: true,
   });
 

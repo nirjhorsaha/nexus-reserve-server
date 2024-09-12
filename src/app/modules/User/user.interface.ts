@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Model } from "mongoose";
+import { Model } from 'mongoose';
 
 export interface IUser {
   name: string;
@@ -10,9 +10,7 @@ export interface IUser {
   role: 'user' | 'admin';
 }
 
-
 export interface UserModel extends Model<IUser> {
-  
   //instance methods for checking if the user exist
   findUserByEmail(email: string): Promise<IUser>;
 

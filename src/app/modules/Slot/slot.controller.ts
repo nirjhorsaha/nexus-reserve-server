@@ -7,7 +7,7 @@ import noDataFound from '../../middlewares/noDataFound';
 
 const createSlot = catchAsync(async (req: Request, res: Response) => {
   const slotData = req.body;
-  
+
   const savedSlots = await SlotService.createSlots(slotData);
 
   sendResponse(res, {
@@ -82,7 +82,6 @@ const deleteSlot = catchAsync(async (req: Request, res: Response) => {
     message: 'Slot deleted successfully',
   });
 });
-
 
 export const SlotController = {
   createSlot,
