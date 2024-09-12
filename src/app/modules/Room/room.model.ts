@@ -38,6 +38,7 @@ const roomSchema = new Schema<IRoom>(
     },
   },
   {
+    timestamps: true,
     versionKey: false,
   },
 );

@@ -34,9 +34,9 @@ const userSchema = new Schema<IUser>(
     },
   },
   {
+    timestamps: true,
     versionKey: false,
   },
-  // { timestamps: true },
 );
 
 // Middleware for pre-saving actions

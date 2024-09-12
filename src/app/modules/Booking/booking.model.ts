@@ -35,28 +35,38 @@ const bookingSchema = new Schema<IBooking, BookingModel>(
       type: String,
       enum: ['approved', 'rejected'],
     },
-    // isConfirmed: {
-    //   type: String,
-    //   enum: {
-    //     values: ['confirmed', 'unconfirmed', 'canceled']
-    //   },
-    // },
     isDeleted: {
       type: Boolean,
       default: false,
     },
+    paymentStatus: {
+      type: String,
+      enum: ['Pending', 'Paid', 'Failed'],
+      default: 'Pending',
+    },
+    transactionID: {
+      type: String,
+      // required: true,
+    },
   },
   {
+    timestamps: true,
     versionKey: false,
   },
 );
 
 // Static methods to find a bookings by id
-bookingSchema.statics.findByIdWithPopulatedFields = function (id: Types.ObjectId) {
-  return this.findById(id)
-    .populate('room')
-    .populate('slots')
-    .populate('user');
+bookingSchema.statics.findByIdWithPopulatedFields = function (
+  id: Types.ObjectId,
+) {
+  return this.findById(id).populate('room').populate('slots').populate('user');
 };
 
 export const Booking = model<IBooking, BookingModel>('Booking', bookingSchema);
+
+// isConfirmed: {
+//   type: String,
+//   enum: {
+//     values: ['confirmed', 'unconfirmed', 'canceled']
+//   },
+// },
