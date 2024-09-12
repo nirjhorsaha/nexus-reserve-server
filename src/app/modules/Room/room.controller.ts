@@ -130,12 +130,7 @@ const deleteRoom = catchAsync(async (req, res) => {
       message: 'Room not found',
     });
   }
-
-  // const chechBookedRoom = await Booking.findById(roomId);
-  // if (chechBookedRoom) {
-  //   throw new AppError(httpStatus.FORBIDDEN, "Booked room won't be deleted !");
-  // }
-
+  
   const deletedRoom = await RoomService.deleteRoom(roomId);
 
   // if (!deleteRoom) {

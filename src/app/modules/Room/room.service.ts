@@ -6,6 +6,7 @@ import { roomSearchableFields } from './room.constant';
 import { Booking } from '../Booking/booking.model';
 import AppError from '../../errors/AppError';
 import httpStatus from 'http-status';
+import { Slot } from '../Slot/slot.model';
 
 const createRoom = async (data: IRoom): Promise<IRoom> => {
   const newRoom = new Room({
@@ -45,11 +46,24 @@ const updateRoom = async (
 };
 
 const deleteRoom = async (id: string): Promise<IRoom | null> => {
-  const checkBookedRoom = await Booking.find({ room: id, isConfirmed: 'confirmed' });
-  
+  const checkBookedSlot = await Slot.find({ room: id, isBooked: true });
+  const checkBookedRoom = await Booking.find({
+    room: id,
+    isConfirmed: 'confirmed',
+  });
+
+  if (checkBookedSlot.length > 0) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      'Room cannot be deleted because some slots are booked!',
+    );
+  }
+
   if (checkBookedRoom.length > 0) {
     throw new AppError(httpStatus.FORBIDDEN, "Booked room won't be deleted!");
   }
+  // Update slots associated with the room to set isDeleted to true
+  await Slot.updateMany({ room: id }, { $set: { isDeleted: true } });
 
   const deletedRoom = await Room.findByIdAndUpdate(
     id,
