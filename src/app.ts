@@ -4,6 +4,7 @@ import cors from 'cors';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import notFound from './app/middlewares/notFound';
 import cookieParser from 'cookie-parser';
+import path from 'path';
 
 
 const app = express();
@@ -17,23 +18,19 @@ app.use(express.json());
 app.use(cookieParser());
 // app.use(cors());
 
-// Application routes
-app.use('/api', router);
-// app.use(
-//   '/api/my-bookings',
-//   authenticateUser,
-//   BookingController.getUserBookings,
-// );
+// Serve static files from the "public" directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+
+app.use('/api', router); // Application routes
 
 // Root route
 app.get('/', (req: Request, res: Response) => {
   res.send('Welcome to our Co-Working Space Booking System!');
 });
 
-// Global error handling middlewares
-app.use(globalErrorHandler);
+app.use(globalErrorHandler); // Global error handling middlewares
 
-// Not Found Route
-app.use(notFound);
+app.use(notFound); // Not Found Route
 
 export default app;
