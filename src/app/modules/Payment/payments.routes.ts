@@ -3,6 +3,6 @@ import { PaymentController } from './payment.controller';
 
 const router = express.Router();
 
-router.post('/confirmation', PaymentController.confirmationController);
+router.get('/confirmation', PaymentController.confirmationController);
 
 export const PaymentRoutes = router;

@@ -1,16 +1,8 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
+import { PaymentData } from './payment.interface';
 
 dotenv.config();
-
-interface PaymentData {
-  transactionID: string;
-  totalAmount: number;
-  customerName: string;
-  customerEmail: string;
-  customerAddress: string;
-  customerPhone: string;
-}
 
 export const initiatePayment = async (paymentData: PaymentData) => {
   try {
@@ -20,7 +12,7 @@ export const initiatePayment = async (paymentData: PaymentData) => {
       tran_id: paymentData.transactionID,
       success_url: `http://localhost:5000/api/payment/confirmation?transactionID=${paymentData.transactionID}&status=success`,
       fail_url: `http://localhost:5000/api/payment/confirmation?&status=failed`,
-      cancel_url: 'http://localhost:5173/',
+      cancel_url: 'http://localhost:5173',
       amount: paymentData.totalAmount,
       currency: 'BDT',
       desc: 'Merchant Registration Payment',
