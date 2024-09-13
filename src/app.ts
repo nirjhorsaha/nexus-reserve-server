@@ -9,15 +9,14 @@ import path from 'path';
 const app = express();
 app.use(
   cors({
-    origin: ['http://localhost:5173'],
+    origin: ['http://localhost:5173', 'https://nexus-reserve.vercel.app'],
     credentials: true,
   }),
 );
+
 app.use(express.json());
 app.use(cookieParser());
-// app.use(cors());
 
-// Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/api', router); // Application routes
