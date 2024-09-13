@@ -7,6 +7,7 @@ import { Slot } from '../Slot/slot.model';
 import { IBooking } from '../Booking/booking.interface';
 import { IRoom } from '../Room/room.interface';
 import { ISlot } from '../Slot/slot.interface';
+import config from '../../config';
 
 const confirmationService = async (transactionID: string) => {
   const verifyResponse = await verifyPayment(transactionID); // Verify payment
@@ -82,19 +83,20 @@ const confirmationService = async (transactionID: string) => {
                         <td style="border: 1px solid #ddd; padding: 8px; text-align: center">${bookingData?.transactionID}</td>
                 </tr>
                 </table>
-                <a href="http://localhost:5173/" class="button">Go to Home</a>
+                <a href="${config.base_url}" class="button">Go to Home</a>
                 <p style='text-align: center'><strong>Thank you for choosing Nexus Reserve!</strong></p>`;
   } else {
     message = `<h1 class='failed-payment'>Payment Failed!</h1>
                 <h3>Oops! Something went wrong with your payment.
                 <span class="bold">Please verify your payment information and try again</span>!</h3>
                 <p>If you need assistance, our support team is here to help.</p>
-                <a href="http://localhost:5173/" class="button">Go to Home</a>`;
+                <a href="${config.base_url}" class="button">Go to Home</a>`;
   }
 
   // Read and update the HTML template
   const filePath = join(__dirname, '../../../../public/confirmation.html');
-  // const filePath = join(__dirname, '../../views/confirmation.html');
+
+  //   const filePath = join(__dirname, '../../views/confirmation.html');
   let template = readFileSync(filePath, 'utf8');
   template = template.replace('{{message}}', message);
   return template;

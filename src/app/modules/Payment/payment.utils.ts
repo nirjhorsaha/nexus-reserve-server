@@ -8,10 +8,10 @@ export const initiatePayment = async (paymentData: PaymentData) => {
   try {
     const response = await axios.post(process.env.PAYMENT_URL!, {
       store_id: process.env.STORE_ID,
-      signature_key: process.env.SIGNATURE_Key,
+      signature_key: process.env.SIGNATURE_KEY,
       tran_id: paymentData.transactionID,
-      success_url: `http://localhost:5000/api/payment/confirmation?transactionID=${paymentData.transactionID}&status=success`,
-      fail_url: `http://localhost:5000/api/payment/confirmation?&status=failed`,
+      success_url: `https://nexus-reserve-server.vercel.app/api/payment/confirmation?transactionID=${paymentData.transactionID}&status=success`,
+      fail_url: `https://nexus-reserve-server.vercel.app/api/payment/confirmation?&status=failed`,
       cancel_url: 'http://localhost:5173',
       amount: paymentData.totalAmount,
       currency: 'BDT',
@@ -38,7 +38,7 @@ export const verifyPayment = async (tnxId: string) => {
     const response = await axios.get(process.env.PAYMENT_VERIFY_URL!, {
       params: {
         store_id: process.env.STORE_ID,
-        signature_key: process.env.SIGNATURE_Key,
+        signature_key: process.env.SIGNATURE_KEY,
         type: 'json',
         request_id: tnxId,
       },
