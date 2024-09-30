@@ -7,7 +7,6 @@ import { Slot } from '../Slot/slot.model';
 import { IBooking } from '../Booking/booking.interface';
 import { IRoom } from '../Room/room.interface';
 import { ISlot } from '../Slot/slot.interface';
-import config from '../../config';
 
 const confirmationService = async (transactionID: string) => {
   const verifyResponse = await verifyPayment(transactionID); // Verify payment
@@ -24,7 +23,6 @@ const confirmationService = async (transactionID: string) => {
 
   const roomId = bookingData?.room as unknown as string; // Extract room ID from booking data
   const slotIds = bookingData?.slots.map((slot) => slot._id); // Extract slot IDs from booking data
-
   roomData = await Room.findById(roomId);
 
   slotData = await Slot.find({ _id: { $in: slotIds } });
@@ -83,14 +81,14 @@ const confirmationService = async (transactionID: string) => {
                         <td style="border: 1px solid #ddd; padding: 8px; text-align: center">${bookingData?.transactionID}</td>
                 </tr>
                 </table>
-                <a href="${config.base_url}" class="button">Go to Home</a>
+                <a href="https://nexus-reserve.vercel.app/" class="button">Go to Home</a>
                 <p style='text-align: center'><strong>Thank you for choosing Nexus Reserve!</strong></p>`;
   } else {
     message = `<h1 class='failed-payment'>Payment Failed!</h1>
                 <h3>Oops! Something went wrong with your payment.
                 <span class="bold">Please verify your payment information and try again</span>!</h3>
                 <p>If you need assistance, our support team is here to help.</p>
-                <a href="${config.base_url}" class="button">Go to Home</a>`;
+                <a href="https://nexus-reserve.vercel.app/" class="button">Go to Home</a>`;
   }
 
   // Read and update the HTML template

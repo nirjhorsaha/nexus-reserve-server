@@ -7,13 +7,6 @@ const bookingSchema = new Schema<IBooking, BookingModel>(
       type: String,
       required: true,
     },
-    slots: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Slot',
-        required: true,
-      },
-    ],
     room: {
       type: Schema.Types.ObjectId,
       ref: 'Room',
@@ -24,16 +17,25 @@ const bookingSchema = new Schema<IBooking, BookingModel>(
       ref: 'User',
       required: true,
     },
+    startTime: {
+      type: String,
+      required: true,
+    },
+    endTime: {
+      type: String,
+      required: true,
+    },
     totalAmount: {
       type: Number,
     },
     isConfirmed: {
       type: String,
-      enum: ['confirmed', 'unconfirmed', 'canceled'],
+      enum: ['Confirmed', 'Unconfirmed', 'Canceled'],
     },
     status: {
       type: String,
-      enum: ['approved', 'rejected'],
+      enum: ['Approved', 'Rejected', 'Pending'],
+      default: 'Pending',
     },
     isDeleted: {
       type: Boolean,
@@ -59,7 +61,7 @@ const bookingSchema = new Schema<IBooking, BookingModel>(
 bookingSchema.statics.findByIdWithPopulatedFields = function (
   id: Types.ObjectId,
 ) {
-  return this.findById(id).populate('room').populate('slots').populate('user');
+  return this.findById(id).populate('room').populate('user');
 };
 
 export const Booking = model<IBooking, BookingModel>('Booking', bookingSchema);

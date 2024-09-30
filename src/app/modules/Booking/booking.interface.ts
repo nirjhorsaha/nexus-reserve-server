@@ -3,15 +3,16 @@ import { Model, Types } from 'mongoose';
 
 export interface IBooking {
   room: Types.ObjectId;
-  slots: Types.ObjectId[];
-  user: Types.ObjectId;
   date: string;
-  totalAmount?: number;
-  isConfirmed?: 'confirmed' | 'unconfirmed' | 'canceled';
-  status?: 'approved' | 'rejected';
-  isDeleted?: boolean;
-  paymentStatus?: string;
+  startTime: string;
+  endTime: string;
+  user: Types.ObjectId;
+  totalAmount: number;
+  isConfirmed?: 'Confirmed' | 'Unconfirmed' | 'Canceled';
+  status?: 'Approved' | 'Rejected';
+  paymentStatus?: 'Pending' | 'Paid' | 'Failed';
   transactionID?: string;
+  isDeleted?: boolean;
 }
 
 // Method to find bookings by id
